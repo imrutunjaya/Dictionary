@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Study Dictionary</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f0f2f5;
+    color: #222;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #3e64ff;
+    color: white;
+    padding: 16px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+  }
+  #topicName {
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+  #searchToggle {
+    background: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+  }
+  #searchBar {
+    position: absolute;
+    top: 56px;
+    left: 0;
+    width: 100%;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    padding: 10px 20px;
+    display: none;
+  }
+  #searchInput {
+    width: 100%;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border: 2px solid #3e64ff;
+    border-radius: 25px;
+    outline: none;
+    transition: border-color 0.3s;
+  }
+  #searchInput:focus {
+    border-color: #1a41d2;
+  }
+  main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .subject-list, .topic-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .subject-list {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 15px;
+  }
+  .subject-item {
+    background: #e5e7ff;
+    padding: 12px 20px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #3e64ff;
+    user-select: none;
+    transition: background-color 0.3s, color 0.3s;
+  }
+  .subject-item.active {
+    background: #3e64ff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(62,100,255,0.5);
+  }
+  .topic-list {
+    max-width: 400px;
+    margin: 0 auto 30px auto;
+  }
+  .topic-item {
+    background: #ffffff;
+    margin-bottom: 10px;
+    padding: 14px 20px;
+    border-radius: 15px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    transition: background-color 0.3s, box-shadow 0.3s;
+  }
+  .topic-item:hover {
+    background: #d2ddff;
+  }
+  .topic-item.active {
+    background: #3e64ff;
+    color: white;
+    box-shadow: 0 4px 12px rgba(62,100,255,0.6);
+  }
+  .content-detail {
+    max-width: 700px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+    line-height: 1.6;
+    color: #111;
+  }
+  .content-detail h2 {
+    margin-top: 0;
+    color: #3e64ff;
+  }
+  .content-detail h3 {
+    margin-bottom: 5px;
+    margin-top: 25px;
+    color: #1a41d2;
+  }
+  .content-detail ul {
+    margin: 5px 0 15px 20px;
+  }
+  .content-detail p {
+    margin: 8px 0 15px 0;
+  }
+  footer {
+    background: #3e64ff;
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
+    z-index: 20;
+  }
+  .nav-btn {
+    background: transparent;
+    border: none;
+    color: #c3cfff;
+    flex: 1;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 12px 0;
+    cursor: pointer;
+    transition: color 0.4s;
+    user-select: none;
+  }
+  .nav-btn.active {
+    color: white;
+    border-top: 3px solid white;
+  }
+
+  /* Scrollbar for content */
+  main::-webkit-scrollbar {
+    width: 10px;
+  }
+  main::-webkit-scrollbar-track {
+    background: #e5e7ff;
+    border-radius: 10px;
+  }
+  main::-webkit-scrollbar-thumb {
+    background: #3e64ff;
+    border-radius: 10px;
+  }
+
+  @media (max-width: 600px) {
+    .content-detail {
+      padding: 15px 18px;
+    }
+    .subject-list {
+      gap: 10px;
+    }
+    .topic-list {
+      max-width: 100%;
+      padding: 0 10px;
+    }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div id="topicName">Select a Subject</div>
+  <button id="searchToggle" aria-label="Toggle Search" title="Search">
+    🔍
+  </button>
+</header>
+<div id="searchBar">
+  <input type="search" id="searchInput" placeholder="Search notes and topics..." aria-label="Search notes and topics" />
+</div>
+<main>
+  <ul class="subject-list" id="subjectList" role="tablist" aria-label="Subject categories">
+    <!-- Subjects inserted dynamically -->
+  </ul>
+  <ul class="topic-list" id="topicList" role="list" aria-label="Subject topics">
+    <!-- Topics inserted dynamically -->
+  </ul>
+  <section class="content-detail" id="contentDetail" tabindex="0" aria-live="polite" aria-atomic="true">
+    <!-- Topic detailed content rendered here -->
+  </section>
+</main>
+<footer>
+  <button class="nav-btn" data-subject="math" aria-label="Math subject">Math</button>
+  <button class="nav-btn" data-subject="english" aria-label="English Grammar subject">English Grammar</button>
+  <button class="nav-btn" data-subject="computer" aria-label="Computer subject">Computer</button>
+</footer>
+<script>
+  // Data for subjects, topics, tips, explanations
+  const data = {
+    math: {
+      name: "Math",
+      topics: {
+        algebra: {
+          title: "Algebra",
+          description: "Algebra is the study of mathematical symbols and rules for manipulating these symbols.",
+          tips: [
+            "Understand variables and constants.",
+            "Practice solving different types of equations.",
+            "Use substitution and elimination methods to solve systems."
+          ],
+          detailed: `<h3>Key Concepts:</h3>
+            <ul>
+              <li>Variables and expressions</li>
+              <li>Linear equations and inequalities</li>
+              <li>Quadratic equations</li>
+              <li>Polynomials</li>
+            </ul>
+            <p>Algebra forms the foundation for advanced mathematics including calculus and geometry.</p>`
+        },
+        geometry: {
+          title: "Geometry",
+          description: "Study of shapes, sizes, and properties of figures and spaces.",
+          tips: [
+            "Learn formulas for area, perimeter, and volume.",
+            "Understand properties of triangles, circles, and polygons.",
+            "Practice proofs and theorems."
+          ],
+          detailed: `<h3>Key Concepts:</h3>
+            <ul>
+              <li>Points, lines, and planes</li>
+              <li>Angles and their relationships</li>
+              <li>Triangles and congruence</li>
+              <li>Circle theorems</li>
+            </ul>
+            <p>Geometry helps develop logical thinking and problem-solving skills.</p>`
+        },
+        calculus: {
+          title: "Calculus",
+          description: "Branch of mathematics dealing with limits, derivatives, integrals, and infinite series.",
+          tips: [
+            "Master basic differentiation and integration rules.",
+            "Practice solving real-world problems.",
+            "Understand the fundamental theorem of calculus."
+          ],
+          detailed: `<h3>Key Concepts:</h3>
+            <ul>
+              <li>Limits and continuity</li>
+              <li>Derivatives and applications</li>
+              <li>Integrals and area under curves</li>
+              <li>Sequences and series</li>
+            </ul>
+            <p>Calculus is widely used in physics, engineering, and economics.</p>`
+        }
+      }
+    },
+    english: {
+      name: "English Grammar",
+      topics: {
+        tenses: {
+          title: "Tenses",
+          description: "Tenses indicate the time of action in a sentence.",
+          tips: [
+            "Learn present, past, and future tenses with their forms.",
+            "Practice using continuous and perfect tenses.",
+            "Use time markers for clarity."
+          ],
+          detailed: `<h3>Types of Tenses:</h3>
+            <ul>
+              <li>Present Simple, Continuous, Perfect</li>
+              <li>Past Simple, Continuous, Perfect</li>
+              <li>Future Simple, Continuous, Perfect</li>
+            </ul>
+            <p>Understanding tenses helps to express time correctly and clearly in writing and speech.</p>`
+        },
+        partsOfSpeech: {
+          title: "Parts of Speech",
+          description: "Categories of words based on their function.",
+          tips: [
+            "Learn nouns, pronouns, verbs, adjectives, and adverbs.",
+            "Understand how conjunctions and prepositions connect ideas.",
+            "Practice identifying parts of speech in sentences."
+          ],
+          detailed: `<h3>Main Parts of Speech:</h3>
+            <ul>
+              <li>Nouns and Pronouns</li>
+              <li>Verbs</li>
+              <li>Adjectives and Adverbs</li>
+              <li>Prepositions and Conjunctions</li>
+              <li>Interjections</li>
+            </ul>
+            <p>Mastering parts of speech improves comprehension and writing skills.</p>`
+        },
+        sentenceStructure: {
+          title: "Sentence Structure",
+          description: "How words are organized to form sentences.",
+          tips: [
+            "Focus on subject-verb agreement.",
+            "Understand types of sentences: declarative, interrogative, imperative, exclamatory.",
+            "Practice complex and compound sentences."
+          ],
+          detailed: `<h3>Elements of Sentence Structure:</h3>
+            <ul>
+              <li>Subjects and Predicates</li>
+              <li>Clauses and Phrases</li>
+              <li>Modifiers</li>
+              <li>Sentence Types and Variety</li>
+            </ul>
+            <p>Good sentence structure enhances clarity and style in communication.</p>`
+        }
+      }
+    },
+    computer: {
+      name: "Computer",
+      topics: {
+        msOffice: {
+          title: "MS Office",
+          description: "Suite of productivity applications by Microsoft.",
+          tips: [
+            "Use keyboard shortcuts for efficiency.",
+            "Explore templates for document creation.",
+            "Learn formatting tools and styles."
+          ],
+          detailed: `<h3>Applications in MS Office:</h3>
+            <ul>
+              <li>Word: Document editing and formatting</li>
+              <li>PowerPoint: Presentation creation</li>
+              <li>Outlook: Email and calendar</li>
+              <li>Access: Database management</li>
+            </ul>
+            <p>MS Office is used widely in offices for various productivity tasks.</p>`
+        },
+        excel: {
+          title: "Excel",
+          description: "Spreadsheet application for data analysis and visualization.",
+          tips: [
+            "Learn formulas and functions like SUM, IF, VLOOKUP.",
+            "Use charts and pivot tables for data insights.",
+            "Practice conditional formatting."
+          ],
+          detailed: `<h3>Excel Core Features:</h3>
+            <ul>
+              <li>Working with cells and ranges</li>
+              <li>Functions and formulas</li>
+              <li>Charts and graphs</li>
+              <li>Data filtering and sorting</li>
+            </ul>
+            <p>Excel is essential for accounting, data management, and analysis.</p>`
+        },
+        spreadsheet: {
+          title: "Spreadsheet",
+          description: "Electronic document for organizing data in rows and columns.",
+          tips: [
+            "Understand rows, columns, and cells basics.",
+            "Use formulas to automate calculations.",
+            "Format cells for readability."
+          ],
+          detailed: `<h3>Spreadsheet Basics:</h3>
+            <ul>
+              <li>Creating and saving spreadsheets</li>
+              <li>Entering and editing data</li>
+              <li>Using formulas and functions</li>
+              <li>Data validation and protection</li>
+            </ul>
+            <p>Mastery of spreadsheets boosts productivity and data handling skills.</p>`
+        }
+      }
+    }
+  };
+
+  // State tracking
+  let currentSubjectKey = null;
+  let currentTopicKey = null;
+  let searchActive = false;
+
+  // DOM elements
+  const subjectListEl = document.getElementById('subjectList');
+  const topicListEl = document.getElementById('topicList');
+  const contentDetailEl = document.getElementById('contentDetail');
+  const topicNameEl = document.getElementById('topicName');
+  const searchToggleBtn = document.getElementById('searchToggle');
+  const searchBarEl = document.getElementById('searchBar');
+  const searchInputEl = document.getElementById('searchInput');
+  const navButtons = document.querySelectorAll('footer .nav-btn');
+
+  // Initialize subjects in top subject list and bottom nav state
+  function initSubjects() {
+    subjectListEl.innerHTML = '';
+    Object.entries(data).forEach(([key, subject]) => {
+      // Top subject list
+      const li = document.createElement('li');
+      li.textContent = subject.name;
+      li.classList.add('subject-item');
+      li.dataset.subject = key;
+      li.setAttribute('role', 'tab');
+      li.setAttribute('tabindex', '0');
+      li.setAttribute('aria-selected', 'false');
+      subjectListEl.appendChild(li);
+      // Event listeners for keyboard accessibility
+      li.addEventListener('click', () => selectSubject(key));
+      li.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectSubject(key);
+        }
+      });
+    });
+  }
+
+  // Select subject
+  function selectSubject(subjectKey) {
+    if(currentSubjectKey === subjectKey) return;
+    currentSubjectKey = subjectKey;
+    currentTopicKey = null;
+    searchInputEl.value = '';
+
+    // Update top subject list active
+    document.querySelectorAll('.subject-item').forEach(item => {
+      if(item.dataset.subject === subjectKey) {
+        item.classList.add('active');
+        item.setAttribute('aria-selected', 'true');
+        item.focus();
+      } else {
+        item.classList.remove('active');
+        item.setAttribute('aria-selected', 'false');
+      }
+    });
+
+    // Update bottom nav active
+    navButtons.forEach(btn => {
+      if(btn.dataset.subject === subjectKey) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+
+    topicNameEl.textContent = data[subjectKey].name;
+    searchBarEl.style.display = 'none';
+    searchActive = false;
+
+    renderTopics(subjectKey);
+    contentDetailEl.innerHTML = '';
+    contentDetailEl.style.display = 'none';
+  }
+
+  // Render topics list for selected subject, filtered by search string optionally
+  function renderTopics(subjectKey, filter='') {
+    topicListEl.innerHTML = '';
+    const subjectTopics = data[subjectKey].topics;
+    let filteredKeys = Object.keys(subjectTopics);
+    if(filter.trim() !== '') {
+      const lcFilter = filter.toLowerCase();
+      filteredKeys = filteredKeys.filter(key => {
+        const topic = subjectTopics[key];
+        const inTitle = topic.title.toLowerCase().includes(lcFilter);
+        const inDesc = topic.description.toLowerCase().includes(lcFilter);
+        const inTips = topic.tips.some(tip => tip.toLowerCase().includes(lcFilter));
+        const inDetail = topic.detailed.toLowerCase().includes(lcFilter);
+        return inTitle || inDesc || inTips || inDetail;
+      });
+    }
+    if(filteredKeys.length === 0) {
+      const noResult = document.createElement('li');
+      noResult.textContent = 'No topics found.';
+      noResult.style.textAlign = 'center';
+      noResult.style.padding = '20px 0';
+      noResult.style.color = '#666';
+      topicListEl.appendChild(noResult);
+      return;
+    }
+    filteredKeys.forEach(key => {
+      const topic = subjectTopics[key];
+      const li = document.createElement('li');
+      li.classList.add('topic-item');
+      li.textContent = topic.title;
+      li.dataset.topic = key;
+      li.setAttribute('tabindex', '0');
+      li.setAttribute('role', 'listitem');
+      topicListEl.appendChild(li);
+      li.addEventListener('click', () => selectTopic(key));
+      li.addEventListener('keydown', e => {
+        if(e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectTopic(key);
+        }
+      });
+    });
+  }
+
+  // Select topic and show detailed content
+  function selectTopic(topicKey) {
+    if(currentTopicKey === topicKey) return;
+    currentTopicKey = topicKey;
+
+    // Highlight active topic item
+    document.querySelectorAll('.topic-item').forEach(item => {
+      if(item.dataset.topic === topicKey) {
+        item.classList.add('active');
+        item.focus();
+      } else {
+        item.classList.remove('active');
+      }
+    });
+
+    const topic = data[currentSubjectKey].topics[topicKey];
+    topicNameEl.textContent = `${data[currentSubjectKey].name} - ${topic.title}`;
+
+    // Render detailed content
+    contentDetailEl.style.display = 'block';
+    contentDetailEl.innerHTML = `
+      <h2>${topic.title}</h2>
+      <p><em>${topic.description}</em></p>
+      <h3>Tips & Tricks:</h3>
+      <ul>${topic.tips.map(tip => `<li>${tip}</li>`).join('')}</ul>
+      ${topic.detailed}
+    `;
+
+    // Close search if open
+    searchBarEl.style.display = 'none';
+    searchActive = false;
+  }
+
+  // Toggle search bar visibility
+  function toggleSearch() {
+    if(searchActive) {
+      searchBarEl.style.display = 'none';
+      searchActive = false;
+      searchInputEl.value = '';
+      if(currentSubjectKey) {
+        renderTopics(currentSubjectKey);
+      }
+    } else {
+      if(!currentSubjectKey) return; // no subject selected
+      searchBarEl.style.display = 'block';
+      searchInputEl.focus();
+      searchActive = true;
+    }
+  }
+
+  // Search input handler
+  function onSearchInput() {
+    const query = searchInputEl.value.trim();
+    if(currentSubjectKey) {
+      renderTopics(currentSubjectKey, query);
+      contentDetailEl.style.display = 'none';
+      topicNameEl.textContent = query ? `Search results for "${query}"` : `${data[currentSubjectKey].name}`;
+    }
+  }
+
+  // Footer nav buttons event handler
+  function initNavButtons() {
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectSubject(btn.dataset.subject);
+      });
+    });
+  }
+
+  // Initialize app
+  function init() {
+    initSubjects();
+    initNavButtons();
+    topicNameEl.textContent = "Select a Subject";
+  }
+
+  // Event listeners
+  searchToggleBtn.addEventListener('click', toggleSearch);
+  searchInputEl.addEventListener('input', onSearchInput);
+
+  // Initialize on page load
+  window.addEventListener('load', init);
+</script>
+</body>
+</html>
+
