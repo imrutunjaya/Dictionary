@@ -6,6 +6,8 @@
 <title>Ultimate Study Dictionary & Current Affairs</title>
 <!-- Font Awesome CDN for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<!-- Papa Parse CDN for CSV parsing -->
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
@@ -31,7 +33,18 @@
     padding: 10px 16px;
     text-align: center;
     font-weight: 600;
-    font-size: 12px;
+    font-size: 14px;
+    user-select: none;
+    position: relative;
+  }
+  #loadingIndicator {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    color: #1e3a8a;
+    display: none;
     user-select: none;
   }
 
@@ -43,6 +56,28 @@
     margin: auto;
     width: 100%;
   }
+  /* File load button */
+  #loadFileBtn {
+    position: fixed;
+    top: 12px;
+    left: 16px;
+    background: #000000;
+    color: white;
+    border: none;
+    padding: 8px 18px;
+    font-size: 14px;
+    border-radius: 3px;
+    user-select: none;
+    cursor: pointer;
+    z-index: 1103;
+  }
+  #loadFileBtn:hover {
+    background-color: #222222;
+  }
+  #fileInput {
+    display: none;
+  }
+
   /* Bottom Navigation Bar with Minimal Black Buttons */
   footer {
     background: #ffffff;
@@ -50,7 +85,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    height: 50px;
+    height: 56px;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -62,12 +97,12 @@
   .bubble-nav {
     background-color: #000000;
     border: none;
-    padding: 6px 14px;
+    padding: 8px 20px;
     font-weight: 600;
     color: white;
     cursor: pointer;
-    font-size: 10px;
-    min-width: 70px;
+    font-size: 12px;
+    min-width: 80px;
     text-align: center;
     user-select: none;
     transition: background-color 0.2s ease;
@@ -79,7 +114,7 @@
     gap: 6px;
   }
   .bubble-nav i {
-    font-size: 0.85rem;
+    font-size: 1rem;
   }
   .bubble-nav.active {
     background-color: #222222;
@@ -91,7 +126,7 @@
   /* Search Bar */
   #searchBar {
     position: fixed;
-    bottom: 55px;
+    bottom: 65px;
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
@@ -105,7 +140,7 @@
   #searchInput {
     width: 100%;
     padding: 6px 10px;
-    font-size: 10px;
+    font-size: 12px;
     border: none;
     outline: none;
     font-weight: 600;
@@ -127,13 +162,13 @@
     border: none;
     cursor: pointer;
     position: fixed;
-    bottom: 110px;
+    bottom: 120px;
     right: 16px;
     z-index: 1100;
-    font-size: 20px;
+    font-size: 24px;
     color: white;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -156,22 +191,22 @@
   .topic-item {
     background: #ffffff;
     border: 1px solid #000000;
-    margin-bottom: 6px;
-    padding: 10px 14px;
+    margin-bottom: 8px;
+    padding: 14px 20px;
     cursor: pointer;
     font-weight: 600;
     color: #000000;
-    font-size: 10px;
+    font-size: 12px;
     width: 100%;
     box-sizing: border-box;
     user-select: none;
-    border-radius: 2px;
+    border-radius: 3px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   .topic-item i {
-    font-size: 0.85rem;
+    font-size: 1.1rem;
     color: #000;
     flex-shrink: 0;
   }
@@ -194,55 +229,64 @@
     margin: 0 auto 90px;
     background: #ffffff;
     border: 1px solid #000000;
-    padding: 28px 32px;
+    padding: 32px 40px;
     line-height: 1.5;
     color: #000000;
-    font-size: 13px;
-    border-radius: 3px;
+    font-size: 14px;
+    border-radius: 4px;
     box-sizing: border-box;
     overflow-y: auto;
   }
   #readingPage h2 {
     color: #000000;
     margin-top: 0;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
   }
   #readingPage h3 {
-    margin-top: 28px;
-    margin-bottom: 12px;
+    margin-top: 32px;
+    margin-bottom: 16px;
     font-weight: 600;
     color: #000;
-    font-size: 15px;
+    font-size: 17px;
   }
   #readingPage ul {
-    margin-left: 20px;
-    margin-bottom: 24px;
+    margin-left: 26px;
+    margin-bottom: 28px;
     color: #111;
-    font-size: 12px;
+    font-size: 13px;
   }
   #readingPage p {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
+  }
+  #readingPage pre {
+    background: #f0f0f0;
+    padding: 14px;
+    overflow-x: auto;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #111827;
+    margin-bottom: 20px;
   }
   #backToTopics {
-    margin-bottom: 22px;
+    margin-bottom: 28px;
     background: #000000;
     color: white;
     border: none;
-    padding: 10px 26px;
-    font-weight: 600;
-    font-size: 12px;
+    padding: 14px 32px;
+    font-weight: 700;
+    font-size: 13px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 5px;
     user-select: none;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.25s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
   #backToTopics i {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   #backToTopics:hover {
     background-color: #222222;
@@ -254,45 +298,49 @@
     margin: 0 auto;
     background: #ffffff;
     border: 1px solid #000000;
-    padding: 28px 32px;
+    padding: 32px 40px;
     color: #000000;
-    min-height: 220px;
+    min-height: 240px;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    font-weight: 600;
-    font-size: 13px;
-    border-radius: 3px;
+    font-weight: 700;
+    font-size: 14px;
+    border-radius: 5px;
   }
   .carousel-title {
-    font-size: 18px;
-    margin-bottom: 12px;
+    font-size: 20px;
+    margin-bottom: 16px;
     color: #000000;
-    font-weight: 700;
+    font-weight: 800;
   }
   .carousel-date {
     font-style: italic;
     color: #444444;
-    margin-bottom: 20px;
-    font-size: 12px;
+    margin-bottom: 24px;
+    font-size: 13px;
   }
   .carousel-content {
-    font-size: 13px;
-    line-height: 1.5;
-    font-weight: 600;
+    font-size: 14px;
+    line-height: 1.65;
+    font-weight: 700;
     color: #222222;
   }
   .no-result {
-    font-weight: 600;
-    font-size: 12px;
+    font-weight: 700;
+    font-size: 13px;
     color: #555555;
-    padding: 50px 0;
+    padding: 60px 0;
     text-align: center;
   }
 </style>
 </head>
 <body>
-<header id="appHeader" tabindex="0" aria-live="polite" aria-atomic="true">Current Affairs</header>
+<button id="loadFileBtn" aria-label="Load Topics CSV"><i class="fa-solid fa-file-csv"></i> Load Topics CSV</button>
+<input type="file" id="fileInput" accept=".csv,text/csv" />
+
+<header id="appHeader" tabindex="0" aria-live="polite" aria-atomic="true" aria-busy="false">Loading Current Affairs...</header>
+<div id="loadingIndicator" aria-hidden="true">Loading…</div>
 
 <main>
   <!-- Topic List Page -->
@@ -322,222 +370,14 @@
 </footer>
 
 <script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
 (() => {
-  const data = {
-    current: {
-      name: "Current Affairs",
-      topics: {
-        event1: {
-          title: "Global Climate Summit 2024",
-          description: "An international summit focused on establishing global commitments to combat climate change.",
-          detailed: "<h3>Summit Overview</h3><p>The 2024 Global Climate Summit represented a critical gathering of international leaders dedicated to actionable solutions addressing climate crisis. Participants emphasized urgent need to reduce greenhouse gases, invest in renewable energy infrastructure, and support vulnerable communities facing climate disruptions.</p><p><strong>Key Agreements:</strong></p><ul><li>Commitment to reduce carbon emissions by 50% before 2030.</li><li>Increased funding for climate finance mechanisms aiding developing nations.</li><li>Promotion of technology transfer for sustainable energy solutions.</li></ul><p>This summit set a roadmap for collaborative international climate policy implementation over the next decade.</p>",
-          date: "April 2024",
-          content: "World leaders pledged ambitious climate goals focused on finance, technology, and sustainability to protect the planet for future generations."
-        },
-        event2: {
-          title: "Space Tourism Breakthrough",
-          description: "A milestone flight marks the maturity of commercial space tourism.",
-          detailed: "<h3>Flight Milestone</h3><p>The suborbital flight successfully carried private passengers, demonstrating reusable launch technology and promising affordable access to space. Safety protocols, passenger experiences including microgravity exposure, and reentry procedures were closely analyzed.</p><p><strong>Industry Implications:</strong></p><ul><li>Expansion of space tourism market and job creation.</li><li>Technological advances influencing satellite deployment.</li><li>Policy discussions aimed at regulating space traffic and environment.</li></ul>",
-          date: "May 2024",
-          content: "Commercial space tourism advances open new frontiers for exploration, research, and enterprise beyond Earth’s atmosphere."
-        },
-        event3: {
-          title: "Artificial Intelligence Ethics Framework",
-          description: "A unified ethical standard for artificial intelligence proposed across nations.",
-          detailed: "<h3>Framework Summary</h3><p>This comprehensive framework addresses transparency, fairness, accountability, and privacy in AI development and deployment. It highlights inclusive governance models and risk management practices, prioritizing human rights and mitigating bias.</p><p>Recommendations focus on robust auditing, public participation, and cross-border cooperation to enable responsible innovation.</p>",
-          date: "June 2024",
-          content: "AI ethics framework seeks to balance technological progress with societal values, ensuring equitable benefits and mitigating harms."
-        },
-        event4: {
-          title: "Renewable Energy Surging Globally",
-          description: "Renewables surpass fossil fuels as primary global energy source.",
-          detailed: "<h3>Energy Transition</h3><p>For the first time, renewable energy accounted for over 40% of global electricity production. Advances in solar, wind, and hydro technologies reduced costs dramatically, driving widescale adoption across continents.</p><p>Challenges remain including grid integration, storage solutions, and policy incentives for sustainability.</p>",
-          date: "April 2024",
-          content: "Renewable energy growth highlights shift toward sustainable, low-carbon economies."
-        }
-      }
-    },
-    math: {
-      name: "Math",
-      topics: {
-        algebra: {
-          title: "Algebra",
-          description: "Advanced concepts of algebra including structures, equations, and theory.",
-          detailed: `
-          <h3>Introduction</h3>
-          <p>Algebra is the branch of mathematics that studies rules of operations and relations using variables and constants. Beyond elementary algebra (equations and polynomials), modern algebra covers abstract algebraic structures.</p>
-          <h3>Key Concepts:</h3>
-          <ul>
-            <li><strong>Groups:</strong> Set with a binary operation satisfying closure, associativity, identity, and inverses.</li>
-            <li><strong>Rings:</strong> Algebraic structures with two binary operations generalizing arithmetic.</li>
-            <li><strong>Fields:</strong> Sets with addition and multiplication satisfying additional properties.</li>
-            <li><strong>Solving Polynomials:</strong> Roots, factoring, the Fundamental Theorem of Algebra.</li>
-          </ul>
-          <h3>Applications:</h3>
-          <p>Provides the foundation for many mathematical disciplines and is essential in cryptography, coding theory, and computer science.</p>
-          `
-        },
-        calculus: {
-          title: "Calculus",
-          description: "In-depth study of differential and integral calculus, sequences, and series.",
-          detailed: `
-          <h3>Limits and Continuity</h3>
-          <p>Understanding the behavior of functions as they approach specific inputs, defining continuity, and foundational to calculus.</p>
-          <h3>Differentiation</h3>
-          <p>Techniques include product, quotient, and chain rules. Applications to rates of change, tangents, optimization problems.</p>
-          <h3>Integration</h3>
-          <p>Fundamental in calculating areas, volumes, accumulated quantities. Techniques include substitution and integration by parts.</p>
-          <h3>Sequences and Series</h3>
-          <p>Study of convergence, Taylor and Maclaurin series expansions with applications in approximations.</p>
-          <h3>Applications</h3>
-          <p>Widely used in physics, engineering, biology, economics for modeling dynamic systems and change.</p>
-          `
-        },
-        geometry: {
-          title: "Geometry",
-          description: "Rigorous treatment of Euclidean and non-Euclidean geometry, including proofs and constructions.",
-          detailed: `
-          <h3>Foundations</h3>
-          <p>Exploration of definitions, axioms, and theorems in Euclidean geometry, including points, lines, planes, and angles.</p>
-          <h3>Triangles and Polygons</h3>
-          <p>Detailed study of properties, area formulas, similarity, congruence criteria (SSS, SAS, ASA).</p>
-          <h3>Circles</h3>
-          <p>Investigations of chords, tangents, arcs, angles, and associated theorems.</p>
-          <h3>Coordinate Geometry</h3>
-          <p>Using algebraic methods to study geometric figures, calculating slopes and distances, and transformations.</p>
-          <h3>Non-Euclidean Geometry</h3>
-          <p>Introduction to hyperbolic and spherical geometry with applications.</p>
-          `
-        },
-        trigonometry: {
-          title: "Trigonometry",
-          description: "Comprehensive study of trigonometric functions, identities, and equations.",
-          detailed: `
-          <h3>Definitions</h3>
-          <p>Sine, Cosine, Tangent defined using right triangles and unit circle approaches.</p>
-          <h3>Identities</h3>
-          <p>Pythagorean, sum and difference formulas, double angle, half angle identities.</p>
-          <h3>Equations</h3>
-          <p>Techniques to solve linear and quadratic trigonometric equations.</p>
-          <h3>Applications</h3>
-          <p>Modeling waves, oscillations, and solving real-world angle/length problems.</p>
-          `
-        },
-        statistics: {
-          title: "Statistics",
-          description: "Advanced statistical methods and probability theory for data analysis.",
-          detailed: `
-          <h3>Descriptive Statistics</h3>
-          <p>Measures of central tendency and variability.</p>
-          <h3>Probability Distributions</h3>
-          <p>Binomial, Poisson, Normal and their properties.</p>
-          <h3>Hypothesis Testing</h3>
-          <p>Tests such as t-test, chi-square, ANOVA, and their conditions.</p>
-          <h3>Regression Analysis</h3>
-          <p>Simple and multiple linear regression, diagnostics.</p>
-          <h3>Applications</h3>
-          <p>Critical for research, economics, social sciences, and data science.</p>
-          `
-        }
-      }
-    },
-    english: {
-      name: "English Grammar",
-      topics: {
-        tenses: {
-          title: "Tenses",
-          description: "Detailed exploration of English tense system with context and examples.",
-          detailed: `
-          <h3>Overview</h3>
-          <p>English has 12 basic tenses categorized in past, present, and future with simple, continuous, perfect forms.</p>
-          <h3>Present Tenses</h3>
-          <p>Simple Present for habitual actions, Present Continuous for ongoing actions, Present Perfect for experience and result relevance.</p>
-          <h3>Past Tenses</h3>
-          <p>Simple Past for completed actions, Past Continuous for interrupted actions, Past Perfect indicating actions before another past action.</p>
-          <h3>Future Tenses</h3>
-          <p>Will-future for predictions, Going to-future for planned actions, Future Perfect for actions completed before a point in the future.</p>
-          <h3>Uses in Sentences</h3>
-          <p>Sample sentences illustrating different tenses in common contexts.</p>
-          `
-        },
-        punctuation: {
-          title: "Punctuation",
-          description: "Rules and usage of English punctuation marks with examples.",
-          detailed: `
-          <h3>Comma (,)</h3>
-          <p>Separates items in lists, offsets introductory phrases, and separates clauses.</p>
-          <h3>Period (.)</h3>
-          <p>Marks end of declarative sentences.</p>
-          <h3>Semicolon (;)</h3>
-          <p>Separates related independent clauses and complex list items.</p>
-          <h3>Colon (:)</h3>
-          <p>Introduces lists, explanations, and quotations.</p>
-          <h3>Quotation Marks (“ ”)</h3>
-          <p>Enclose direct speech, quotations, and titles.</p>
-          <h3>Apostrophe (’)</h3>
-          <p>Shows possession or contractions.</p>
-          <h3>Examples and Common Errors</h3>
-          <p>Practical guides to usage and avoiding mistakes.</p>
-          `
-        }
-      }
-    },
-    computer: {
-      name: "Computer",
-      topics: {
-        msOffice: {
-          title: "MS Office",
-          description: "In-depth guide to Microsoft Office productivity tools.",
-          detailed: `
-          <h3>Microsoft Word</h3>
-          <p>Create and format professional documents using styles, templates, sections, and references.</p>
-          <h3>Microsoft Excel</h3>
-          <p>Use formulas, pivot tables, charts, and macros for data analysis and automation.</p>
-          <h3>PowerPoint</h3>
-          <p>Design impactful presentations with themes, animations, and multimedia.</p>
-          `
-        },
-        programming: {
-          title: "Programming",
-          description: "Core programming concepts for beginners and intermediate learners.",
-          detailed: `
-          <h3>Data Types & Variables</h3>
-          <p>Understanding primitive data types and storing information in variables.</p>
-          <h3>Control Flow</h3>
-          <p>Conditional statements (if-else) and loops (for, while) controlling program logic.</p>
-          <h3>Functions & Recursion</h3>
-          <p>Modularizing code with functions and understanding recursive algorithms.</p>
-          <h3>Object-Oriented Programming</h3>
-          <p>Classes, inheritance, encapsulation principles for scalable code.</p>
-          `
-        },
-        networking: {
-          title: "Networking",
-          description: "Fundamental concepts in computer networking.",
-          detailed: `
-          <h3>Networking Models</h3>
-          <p>OSI and TCP/IP models explaining different network layers.</p>
-          <h3>IP Addressing</h3>
-          <p>Understanding IPv4/IPv6, subnetting, and address allocation.</p>
-          <h3>Protocols</h3>
-          <p>HTTP, FTP, SMTP, and their roles in communication.</p>
-          `
-        },
-        cybersecurity: {
-          title: "Cybersecurity",
-          description: "Principles and practices for securing systems and data.",
-          detailed: `
-          <h3>Threat Landscape</h3>
-          <p>Types of malware, phishing, denial-of-service attacks.</p>
-          <h3>Security Measures</h3>
-          <p>Firewalls, antivirus, encryption, multi-factor authentication.</p>
-          <h3>Best Practices</h3>
-          <p>Patch management, secure coding, user protocols.</p>
-          `
-        }
-      }
-    }
+  let data = {
+    current: { name: "Current Affairs", topics: {} },
+    math: { name: "Math", topics: {} },
+    english: { name: "English Grammar", topics: {} },
+    computer: { name: "Computer", topics: {} }
   };
 
   let currentSubjectKey = 'current';
@@ -546,6 +386,7 @@
   let currentAffairsIndex = 0;
   let currentAffairsTimerId = null;
 
+  // DOM refs
   const topicListEl = document.getElementById('topicList');
   const readingPageEl = document.getElementById('readingPage');
   const readingContentEl = document.getElementById('readingContent');
@@ -555,6 +396,65 @@
   const searchInputEl = document.getElementById('searchInput');
   const navButtons = document.querySelectorAll('.bubble-nav');
   const backToTopicsBtn = document.getElementById('backToTopics');
+  const loadFileBtn = document.getElementById('loadFileBtn');
+  const fileInput = document.getElementById('fileInput');
+  const loadingIndicator = document.getElementById('loadingIndicator');
+
+  // Fetch current affairs JSON from online source (you must provide your JSON URL)
+  const currentAffairsURL = 'https://raw.githubusercontent.com/blackbox-ai/sample-assets/main/current_affairs_2023_2025.json';
+
+  function fetchCurrentAffairs() {
+    loadingIndicator.style.display = 'inline';
+    appHeaderEl.setAttribute('aria-busy', 'true');
+    fetch(currentAffairsURL)
+      .then(response => {
+        if (!response.ok) throw new Error("Network response not ok");
+        return response.json();
+      })
+      .then(json => {
+        loadingIndicator.style.display = 'none';
+        appHeaderEl.setAttribute('aria-busy', 'false');
+        data.current.topics = json.topics || {};
+        // if current subject active, refresh
+        if (currentSubjectKey === 'current') {
+          renderTopicList('current');
+          showTopicList();
+        }
+      })
+      .catch(err => {
+        loadingIndicator.style.display = 'none';
+        appHeaderEl.setAttribute('aria-busy', 'false');
+        alert('Failed to load Current Affairs data.\n' + err.message);
+      });
+  }
+
+  // CSV parsing and loading for other subjects
+  function loadDataFromCSV(rows) {
+    const allowedSubjects = ['math', 'english', 'computer'];
+    allowedSubjects.forEach(subj => data[subj].topics = {}); // clear those subjects only
+    rows.forEach(row => {
+      const subject = row.subject.toLowerCase();
+      if (!data[subject]) {
+        if (allowedSubjects.includes(subject)) {
+          data[subject] = { name: row.subject, topics: {} };
+        }
+      }
+      if (allowedSubjects.includes(subject)) {
+        const key = row.topicKey || `topic${Object.keys(data[subject].topics).length + 1}`;
+        data[subject].topics[key] = {
+          title: row.title || "",
+          description: row.description || "",
+          detailed: row.detailed || "",
+          date: row.date || "",
+          content: row.content || ""
+        };
+      }
+    });
+    if (currentSubjectKey !== 'current') {
+      renderTopicList(currentSubjectKey);
+      showTopicList();
+    }
+  }
 
   function setActiveNav(subjectKey) {
     navButtons.forEach(btn => {
@@ -589,7 +489,7 @@
   function renderTopicList(subjectKey, filter = '') {
     topicListEl.innerHTML = '';
     const subject = data[subjectKey];
-    if(!subject) return;
+    if (!subject) return;
     const topics = subject.topics;
     const keys = Object.keys(topics);
     const filterLower = filter.toLowerCase();
@@ -601,7 +501,7 @@
         || (t.detailed && t.detailed.toLowerCase().includes(filterLower));
     });
 
-    if(filteredKeys.length === 0) {
+    if (filteredKeys.length === 0) {
       const li = document.createElement('li');
       li.className = 'no-result';
       li.textContent = 'No topics found.';
@@ -624,7 +524,7 @@
       li.innerHTML = `<i class="fa-solid ${subjectIcon}"></i> ${topic.title}`;
       li.onclick = () => selectTopic(key);
       li.onkeypress = e => {
-        if(e.key === "Enter" || e.key === " ") {
+        if (e.key === "Enter" || e.key === " ") {
           selectTopic(key);
         }
       };
@@ -634,9 +534,9 @@
 
   function selectTopic(topicKey) {
     const subject = data[currentSubjectKey];
-    if(!subject) return;
+    if (!subject) return;
     const topic = subject.topics[topicKey];
-    if(!topic) return;
+    if (!topic) return;
     currentTopicKey = topicKey;
 
     appHeaderEl.textContent = `${subject.name} - ${topic.title}`;
@@ -651,21 +551,21 @@
 
   function startCurrentAffairsCarousel() {
     const keys = Object.keys(data.current.topics);
-    if(keys.length === 0) return;
+    if (keys.length === 0) return;
     currentAffairsIndex = 0;
     renderCurrentAffairs(keys[currentAffairsIndex]);
 
-    if(currentAffairsTimerId) clearInterval(currentAffairsTimerId);
+    if (currentAffairsTimerId) clearInterval(currentAffairsTimerId);
     currentAffairsTimerId = setInterval(() => {
       currentAffairsIndex++;
-      if(currentAffairsIndex >= keys.length) currentAffairsIndex = 0;
+      if (currentAffairsIndex >= keys.length) currentAffairsIndex = 0;
       renderCurrentAffairs(keys[currentAffairsIndex]);
-    }, 12000);
+    }, 15000);
   }
 
   function renderCurrentAffairs(key) {
     const topic = data.current.topics[key];
-    if(!topic) return;
+    if (!topic) return;
     currentTopicKey = null;
     appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
     readingContentEl.innerHTML = `
@@ -680,21 +580,21 @@
   }
 
   function stopCurrentAffairsCarousel() {
-    if(currentAffairsTimerId) {
+    if (currentAffairsTimerId) {
       clearInterval(currentAffairsTimerId);
       currentAffairsTimerId = null;
     }
   }
 
   function selectSubject(subjectKey) {
-    if(currentSubjectKey === subjectKey) return;
+    if (currentSubjectKey === subjectKey) return;
     currentSubjectKey = subjectKey;
     currentTopicKey = null;
     clearSearch();
     setActiveNav(subjectKey);
 
-    if(subjectKey === 'current') {
-      startCurrentAffairsCarousel();
+    if (subjectKey === 'current') {
+      fetchCurrentAffairs();
     } else {
       stopCurrentAffairsCarousel();
       appHeaderEl.textContent = data[subjectKey].name;
@@ -704,16 +604,21 @@
   }
 
   function toggleSearch() {
-    if(searchActive) {
+    if (searchActive) {
       clearSearch();
-      if(currentSubjectKey === 'current') {
-        startCurrentAffairsCarousel();
+      if (currentSubjectKey === 'current') {
+        if (Object.keys(data.current.topics).length > 0) {
+          renderTopicList('current');
+          showTopicList();
+        } else {
+          fetchCurrentAffairs();
+        }
       } else {
         renderTopicList(currentSubjectKey);
         showTopicList();
       }
-    } else if(currentSubjectKey) {
-      if(currentSubjectKey === 'current') stopCurrentAffairsCarousel();
+    } else if (currentSubjectKey) {
+      if (currentSubjectKey === 'current') stopCurrentAffairsCarousel();
       searchBarEl.style.display = 'block';
       searchInputEl.focus();
       searchActive = true;
@@ -722,14 +627,14 @@
 
   function onSearchInput() {
     const query = searchInputEl.value.trim();
-    if(currentSubjectKey === 'current') {
+    if (currentSubjectKey === 'current') {
       const filteredKeys = Object.keys(data.current.topics).filter(k => {
         const t = data.current.topics[k];
         const qLower = query.toLowerCase();
-        return (t.title.toLowerCase().includes(qLower) || t.description.toLowerCase().includes(qLower) || t.content.toLowerCase().includes(qLower));
+        return (t.title.toLowerCase().includes(qLower) || t.description.toLowerCase().includes(qLower) || (t.content && t.content.toLowerCase().includes(qLower)));
       });
 
-      if(filteredKeys.length > 0) {
+      if (filteredKeys.length > 0) {
         stopCurrentAffairsCarousel();
         topicListEl.innerHTML = '';
         filteredKeys.forEach(key => {
@@ -740,7 +645,7 @@
           li.innerHTML = '<i class="fa-solid fa-globe"></i> ' + topic.title;
           li.onclick = () => selectCurrentAffairsTopic(key);
           li.onkeypress = e => {
-            if(e.key === "Enter" || e.key === " ") selectCurrentAffairsTopic(key);
+            if (e.key === "Enter" || e.key === " ") selectCurrentAffairsTopic(key);
           };
           topicListEl.appendChild(li);
         });
@@ -763,13 +668,13 @@
 
   function selectCurrentAffairsTopic(topicKey) {
     const topic = data.current.topics[topicKey];
-    if(!topic) return;
+    if (!topic) return;
     currentTopicKey = topicKey;
     appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
     readingContentEl.innerHTML = `
       <h2>${topic.title}</h2>
       <p><em>${topic.description}</em></p>
-      <p>${topic.content}</p>
+      <p>${topic.content || ''}</p>
       ${topic.detailed || ''}
     `;
     showReadingPage();
@@ -781,7 +686,7 @@
       selectSubject(btn.dataset.subject);
     });
     btn.addEventListener('keydown', e => {
-      if(e.key === 'Enter' || e.key === ' ') {
+      if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         selectSubject(btn.dataset.subject);
       }
@@ -792,8 +697,13 @@
   searchInputEl.addEventListener('input', onSearchInput);
   backToTopicsBtn.addEventListener('click', () => {
     clearSearch();
-    if(currentSubjectKey === 'current') {
-      startCurrentAffairsCarousel();
+    if (currentSubjectKey === 'current') {
+      if (Object.keys(data.current.topics).length > 0) {
+        renderTopicList('current');
+        showTopicList();
+      } else {
+        fetchCurrentAffairs();
+      }
     } else {
       appHeaderEl.textContent = data[currentSubjectKey].name;
       renderTopicList(currentSubjectKey);
@@ -801,14 +711,61 @@
     }
   });
 
+  // CSV Load UI interactions
+  const loadFileBtn = document.getElementById('loadFileBtn');
+  const fileInput = document.getElementById('fileInput');
+
+  loadFileBtn.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          loadDataFromCSV(results.data);
+          // Refresh UI with loaded data if current tab is not current affairs
+          if (currentSubjectKey !== 'current') {
+            renderTopicList(currentSubjectKey);
+            showTopicList();
+          }
+        },
+        error: (err) => {
+          alert("Error parsing CSV: " + err.message);
+        }
+      });
+    }
+  });
+
+  function fetchCurrentAffairs() {
+    loadingIndicator.style.display = 'inline';
+    appHeaderEl.setAttribute('aria-busy', 'true');
+    // For demonstration, using a static dummy JSON on GitHub:
+    // Replace the URL below with your actual current affairs JSON URL
+    fetch('https://raw.githubusercontent.com/blackbox-ai/sample-assets/main/current_affairs_2023_2025.json')
+      .then(response => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+      })
+      .then(json => {
+        loadingIndicator.style.display = 'none';
+        appHeaderEl.setAttribute('aria-busy', 'false');
+        data.current.topics = json.topics || {};
+        renderTopicList('current');
+        showTopicList();
+      })
+      .catch(err => {
+        loadingIndicator.style.display = 'none';
+        appHeaderEl.setAttribute('aria-busy', 'false');
+        alert('Failed to load Current Affairs data.\n' + err.message);
+      });
+  }
+
   window.addEventListener('load', () => {
     setActiveNav(currentSubjectKey);
-    if(currentSubjectKey === 'current') {
-      startCurrentAffairsCarousel();
-    } else {
-      renderTopicList(currentSubjectKey);
-      showTopicList();
-    }
+    // Initially fetch current affairs
+    fetchCurrentAffairs();
   });
 })();
 </script>
