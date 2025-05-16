@@ -3,282 +3,442 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Study Dictionary</title>
+<title>Ultimate Study Dictionary & Current Affairs</title>
+<!-- Font Awesome CDN for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
   * {
     box-sizing: border-box;
   }
+
   body, html {
     margin: 0; padding: 0;
     font-family: 'Poppins', sans-serif;
-    background: #f0f2f5;
-    color: #222;
+    background: #ffffff;
+    color: #000000;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
   }
+
   header {
-    background: #3e64ff;
-    color: white;
-    padding: 16px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+    background: #ffffff;
+    border-bottom: 1px solid #ccc;
+    color: #000;
+    padding: 10px 16px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 12px;
+    user-select: none;
   }
-  #topicName {
-    font-size: 1.2rem;
-    font-weight: 700;
-  }
-  #searchToggle {
-    background: transparent;
-    border: none;
-    color: white;
-    cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-  }
-  #searchBar {
-    position: absolute;
-    top: 56px;
-    left: 0;
-    width: 100%;
-    background: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    padding: 10px 20px;
-    display: none;
-  }
-  #searchInput {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: 2px solid #3e64ff;
-    border-radius: 25px;
-    outline: none;
-    transition: border-color 0.3s;
-  }
-  #searchInput:focus {
-    border-color: #1a41d2;
-  }
+
   main {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
+    padding: 14px 12px 90px 12px;
+    max-width: 900px;
+    margin: auto;
+    width: 100%;
   }
-  .subject-list, .topic-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  .subject-list {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin-bottom: 15px;
-  }
-  .subject-item {
-    background: #e5e7ff;
-    padding: 12px 20px;
-    border-radius: 25px;
-    cursor: pointer;
-    font-weight: 600;
-    color: #3e64ff;
-    user-select: none;
-    transition: background-color 0.3s, color 0.3s;
-  }
-  .subject-item.active {
-    background: #3e64ff;
-    color: white;
-    box-shadow: 0 4px 12px rgba(62,100,255,0.5);
-  }
-  .topic-list {
-    max-width: 400px;
-    margin: 0 auto 30px auto;
-  }
-  .topic-item {
-    background: #ffffff;
-    margin-bottom: 10px;
-    padding: 14px 20px;
-    border-radius: 15px;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    transition: background-color 0.3s, box-shadow 0.3s;
-  }
-  .topic-item:hover {
-    background: #d2ddff;
-  }
-  .topic-item.active {
-    background: #3e64ff;
-    color: white;
-    box-shadow: 0 4px 12px rgba(62,100,255,0.6);
-  }
-  .content-detail {
-    max-width: 700px;
-    margin: 0 auto;
-    background: white;
-    border-radius: 15px;
-    padding: 20px 25px;
-    box-shadow: 0 3px 15px rgba(0,0,0,0.1);
-    line-height: 1.6;
-    color: #111;
-  }
-  .content-detail h2 {
-    margin-top: 0;
-    color: #3e64ff;
-  }
-  .content-detail h3 {
-    margin-bottom: 5px;
-    margin-top: 25px;
-    color: #1a41d2;
-  }
-  .content-detail ul {
-    margin: 5px 0 15px 20px;
-  }
-  .content-detail p {
-    margin: 8px 0 15px 0;
-  }
+  /* Bottom Navigation Bar with Minimal Black Buttons */
   footer {
-    background: #3e64ff;
-    display: flex;
-    justify-content: space-around;
-    padding: 8px 0;
+    background: #ffffff;
+    box-shadow: 0 -1px 5px rgba(0,0,0,0.1);
     position: fixed;
     bottom: 0;
     width: 100%;
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.15);
-    z-index: 20;
+    height: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 8px;
+    z-index: 1000;
+    border-top: 1px solid #ccc;
   }
-  .nav-btn {
-    background: transparent;
+
+  .bubble-nav {
+    background-color: #000000;
     border: none;
-    color: #c3cfff;
-    flex: 1;
-    font-weight: 700;
-    font-size: 14px;
-    padding: 12px 0;
-    cursor: pointer;
-    transition: color 0.4s;
-    user-select: none;
-  }
-  .nav-btn.active {
+    padding: 6px 14px;
+    font-weight: 600;
     color: white;
-    border-top: 3px solid white;
+    cursor: pointer;
+    font-size: 10px;
+    min-width: 70px;
+    text-align: center;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .bubble-nav i {
+    font-size: 0.85rem;
+  }
+  .bubble-nav.active {
+    background-color: #222222;
+  }
+  .bubble-nav:hover:not(.active) {
+    background-color: #333333;
   }
 
-  /* Scrollbar for content */
-  main::-webkit-scrollbar {
-    width: 10px;
+  /* Search Bar */
+  #searchBar {
+    position: fixed;
+    bottom: 55px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 700px;
+    background: white;
+    border: 1px solid #000;
+    padding: 6px 14px;
+    display: none;
+    z-index: 1050;
   }
-  main::-webkit-scrollbar-track {
-    background: #e5e7ff;
-    border-radius: 10px;
+  #searchInput {
+    width: 100%;
+    padding: 6px 10px;
+    font-size: 10px;
+    border: none;
+    outline: none;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #000;
+    background: #f9f9f9;
+    border-radius: 3px;
+    box-sizing: border-box;
   }
-  main::-webkit-scrollbar-thumb {
-    background: #3e64ff;
-    border-radius: 10px;
+  #searchInput::placeholder {
+    color: #666;
+  }
+  #searchInput:focus {
+    outline: none;
+    box-shadow: 0 0 6px #000000aa;
+  }
+  #searchToggle {
+    background: #000000;
+    border: none;
+    cursor: pointer;
+    position: fixed;
+    bottom: 110px;
+    right: 16px;
+    z-index: 1100;
+    font-size: 20px;
+    color: white;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
+    border-radius: 3px;
+    box-shadow: none;
+    transition: background-color 0.2s ease;
+  }
+  #searchToggle:hover {
+    background-color: #222222;
   }
 
-  @media (max-width: 600px) {
-    .content-detail {
-      padding: 15px 18px;
-    }
-    .subject-list {
-      gap: 10px;
-    }
-    .topic-list {
-      max-width: 100%;
-      padding: 0 10px;
-    }
+  /* Topic List */
+  #topicList {
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 840px;
+  }
+  .topic-item {
+    background: #ffffff;
+    border: 1px solid #000000;
+    margin-bottom: 6px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #000000;
+    font-size: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    user-select: none;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .topic-item i {
+    font-size: 0.85rem;
+    color: #000;
+    flex-shrink: 0;
+  }
+  .topic-item:hover {
+    background-color: #000000;
+    color: #ffffff;
+    border-color: #000000;
+  }
+  .topic-item:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+    background-color: #222222;
+    color: #fff;
+  }
+
+  /* Reading Page */
+  #readingPage {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto 90px;
+    background: #ffffff;
+    border: 1px solid #000000;
+    padding: 28px 32px;
+    line-height: 1.5;
+    color: #000000;
+    font-size: 13px;
+    border-radius: 3px;
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+  #readingPage h2 {
+    color: #000000;
+    margin-top: 0;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  #readingPage h3 {
+    margin-top: 28px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    color: #000;
+    font-size: 15px;
+  }
+  #readingPage ul {
+    margin-left: 20px;
+    margin-bottom: 24px;
+    color: #111;
+    font-size: 12px;
+  }
+  #readingPage p {
+    margin-bottom: 18px;
+  }
+  #backToTopics {
+    margin-bottom: 22px;
+    background: #000000;
+    color: white;
+    border: none;
+    padding: 10px 26px;
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    user-select: none;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #backToTopics i {
+    font-size: 1rem;
+  }
+  #backToTopics:hover {
+    background-color: #222222;
+  }
+
+  /* Current Affairs reading style */
+  .current-affairs-carousel {
+    max-width: 900px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #000000;
+    padding: 28px 32px;
+    color: #000000;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 3px;
+  }
+  .carousel-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #000000;
+    font-weight: 700;
+  }
+  .carousel-date {
+    font-style: italic;
+    color: #444444;
+    margin-bottom: 20px;
+    font-size: 12px;
+  }
+  .carousel-content {
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 600;
+    color: #222222;
+  }
+  .no-result {
+    font-weight: 600;
+    font-size: 12px;
+    color: #555555;
+    padding: 50px 0;
+    text-align: center;
   }
 </style>
 </head>
 <body>
-<header>
-  <div id="topicName">Select a Subject</div>
-  <button id="searchToggle" aria-label="Toggle Search" title="Search">
-    🔍
-  </button>
-</header>
-<div id="searchBar">
-  <input type="search" id="searchInput" placeholder="Search notes and topics..." aria-label="Search notes and topics" />
-</div>
+<header id="appHeader" tabindex="0" aria-live="polite" aria-atomic="true">Current Affairs</header>
+
 <main>
-  <ul class="subject-list" id="subjectList" role="tablist" aria-label="Subject categories">
-    <!-- Subjects inserted dynamically -->
+  <!-- Topic List Page -->
+  <ul id="topicList" role="list" aria-label="Subject topics">
+    <!-- Dynamic topic items -->
   </ul>
-  <ul class="topic-list" id="topicList" role="list" aria-label="Subject topics">
-    <!-- Topics inserted dynamically -->
-  </ul>
-  <section class="content-detail" id="contentDetail" tabindex="0" aria-live="polite" aria-atomic="true">
-    <!-- Topic detailed content rendered here -->
+
+  <!-- Reading Page: detailed content with back button -->
+  <section id="readingPage" tabindex="0" aria-live="polite" aria-atomic="true">
+    <button id="backToTopics" aria-label="Back to topic list"><i class="fa-solid fa-arrow-left"></i> Back to Topics</button>
+    <div id="readingContent">
+      <!-- detailed content here -->
+    </div>
   </section>
 </main>
-<footer>
-  <button class="nav-btn" data-subject="math" aria-label="Math subject">Math</button>
-  <button class="nav-btn" data-subject="english" aria-label="English Grammar subject">English Grammar</button>
-  <button class="nav-btn" data-subject="computer" aria-label="Computer subject">Computer</button>
+
+<button id="searchToggle" aria-label="Toggle Search" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+<div id="searchBar" role="search">
+  <input type="search" id="searchInput" placeholder="Search notes and topics..." aria-label="Search notes and topics" autocomplete="off" />
+</div>
+
+<footer role="tablist" aria-label="Primary subjects navigation">
+  <button class="bubble-nav" data-subject="current" aria-selected="true" role="tab" tabindex="0" aria-controls="topicList" aria-label="Current Affairs"><i class="fa-solid fa-globe"></i>Current</button>
+  <button class="bubble-nav" data-subject="math" aria-selected="false" role="tab" tabindex="-1" aria-controls="topicList" aria-label="Math"><i class="fa-solid fa-square-root-variable"></i>Math</button>
+  <button class="bubble-nav" data-subject="english" aria-selected="false" role="tab" tabindex="-1" aria-controls="topicList" aria-label="English Grammar"><i class="fa-solid fa-book-open"></i>English</button>
+  <button class="bubble-nav" data-subject="computer" aria-selected="false" role="tab" tabindex="-1" aria-controls="topicList" aria-label="Computer"><i class="fa-solid fa-laptop-code"></i>Computer</button>
 </footer>
+
+<script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
 <script>
-  // Data for subjects, topics, tips, explanations
+(() => {
   const data = {
+    current: {
+      name: "Current Affairs",
+      topics: {
+        event1: {
+          title: "Global Climate Summit 2024",
+          description: "An international summit focused on establishing global commitments to combat climate change.",
+          detailed: "<h3>Summit Overview</h3><p>The 2024 Global Climate Summit represented a critical gathering of international leaders dedicated to actionable solutions addressing climate crisis. Participants emphasized urgent need to reduce greenhouse gases, invest in renewable energy infrastructure, and support vulnerable communities facing climate disruptions.</p><p><strong>Key Agreements:</strong></p><ul><li>Commitment to reduce carbon emissions by 50% before 2030.</li><li>Increased funding for climate finance mechanisms aiding developing nations.</li><li>Promotion of technology transfer for sustainable energy solutions.</li></ul><p>This summit set a roadmap for collaborative international climate policy implementation over the next decade.</p>",
+          date: "April 2024",
+          content: "World leaders pledged ambitious climate goals focused on finance, technology, and sustainability to protect the planet for future generations."
+        },
+        event2: {
+          title: "Space Tourism Breakthrough",
+          description: "A milestone flight marks the maturity of commercial space tourism.",
+          detailed: "<h3>Flight Milestone</h3><p>The suborbital flight successfully carried private passengers, demonstrating reusable launch technology and promising affordable access to space. Safety protocols, passenger experiences including microgravity exposure, and reentry procedures were closely analyzed.</p><p><strong>Industry Implications:</strong></p><ul><li>Expansion of space tourism market and job creation.</li><li>Technological advances influencing satellite deployment.</li><li>Policy discussions aimed at regulating space traffic and environment.</li></ul>",
+          date: "May 2024",
+          content: "Commercial space tourism advances open new frontiers for exploration, research, and enterprise beyond Earth’s atmosphere."
+        },
+        event3: {
+          title: "Artificial Intelligence Ethics Framework",
+          description: "A unified ethical standard for artificial intelligence proposed across nations.",
+          detailed: "<h3>Framework Summary</h3><p>This comprehensive framework addresses transparency, fairness, accountability, and privacy in AI development and deployment. It highlights inclusive governance models and risk management practices, prioritizing human rights and mitigating bias.</p><p>Recommendations focus on robust auditing, public participation, and cross-border cooperation to enable responsible innovation.</p>",
+          date: "June 2024",
+          content: "AI ethics framework seeks to balance technological progress with societal values, ensuring equitable benefits and mitigating harms."
+        },
+        event4: {
+          title: "Renewable Energy Surging Globally",
+          description: "Renewables surpass fossil fuels as primary global energy source.",
+          detailed: "<h3>Energy Transition</h3><p>For the first time, renewable energy accounted for over 40% of global electricity production. Advances in solar, wind, and hydro technologies reduced costs dramatically, driving widescale adoption across continents.</p><p>Challenges remain including grid integration, storage solutions, and policy incentives for sustainability.</p>",
+          date: "April 2024",
+          content: "Renewable energy growth highlights shift toward sustainable, low-carbon economies."
+        }
+      }
+    },
     math: {
       name: "Math",
       topics: {
         algebra: {
           title: "Algebra",
-          description: "Algebra is the study of mathematical symbols and rules for manipulating these symbols.",
-          tips: [
-            "Understand variables and constants.",
-            "Practice solving different types of equations.",
-            "Use substitution and elimination methods to solve systems."
-          ],
-          detailed: `<h3>Key Concepts:</h3>
-            <ul>
-              <li>Variables and expressions</li>
-              <li>Linear equations and inequalities</li>
-              <li>Quadratic equations</li>
-              <li>Polynomials</li>
-            </ul>
-            <p>Algebra forms the foundation for advanced mathematics including calculus and geometry.</p>`
-        },
-        geometry: {
-          title: "Geometry",
-          description: "Study of shapes, sizes, and properties of figures and spaces.",
-          tips: [
-            "Learn formulas for area, perimeter, and volume.",
-            "Understand properties of triangles, circles, and polygons.",
-            "Practice proofs and theorems."
-          ],
-          detailed: `<h3>Key Concepts:</h3>
-            <ul>
-              <li>Points, lines, and planes</li>
-              <li>Angles and their relationships</li>
-              <li>Triangles and congruence</li>
-              <li>Circle theorems</li>
-            </ul>
-            <p>Geometry helps develop logical thinking and problem-solving skills.</p>`
+          description: "Advanced concepts of algebra including structures, equations, and theory.",
+          detailed: `
+          <h3>Introduction</h3>
+          <p>Algebra is the branch of mathematics that studies rules of operations and relations using variables and constants. Beyond elementary algebra (equations and polynomials), modern algebra covers abstract algebraic structures.</p>
+          <h3>Key Concepts:</h3>
+          <ul>
+            <li><strong>Groups:</strong> Set with a binary operation satisfying closure, associativity, identity, and inverses.</li>
+            <li><strong>Rings:</strong> Algebraic structures with two binary operations generalizing arithmetic.</li>
+            <li><strong>Fields:</strong> Sets with addition and multiplication satisfying additional properties.</li>
+            <li><strong>Solving Polynomials:</strong> Roots, factoring, the Fundamental Theorem of Algebra.</li>
+          </ul>
+          <h3>Applications:</h3>
+          <p>Provides the foundation for many mathematical disciplines and is essential in cryptography, coding theory, and computer science.</p>
+          `
         },
         calculus: {
           title: "Calculus",
-          description: "Branch of mathematics dealing with limits, derivatives, integrals, and infinite series.",
-          tips: [
-            "Master basic differentiation and integration rules.",
-            "Practice solving real-world problems.",
-            "Understand the fundamental theorem of calculus."
-          ],
-          detailed: `<h3>Key Concepts:</h3>
-            <ul>
-              <li>Limits and continuity</li>
-              <li>Derivatives and applications</li>
-              <li>Integrals and area under curves</li>
-              <li>Sequences and series</li>
-            </ul>
-            <p>Calculus is widely used in physics, engineering, and economics.</p>`
+          description: "In-depth study of differential and integral calculus, sequences, and series.",
+          detailed: `
+          <h3>Limits and Continuity</h3>
+          <p>Understanding the behavior of functions as they approach specific inputs, defining continuity, and foundational to calculus.</p>
+          <h3>Differentiation</h3>
+          <p>Techniques include product, quotient, and chain rules. Applications to rates of change, tangents, optimization problems.</p>
+          <h3>Integration</h3>
+          <p>Fundamental in calculating areas, volumes, accumulated quantities. Techniques include substitution and integration by parts.</p>
+          <h3>Sequences and Series</h3>
+          <p>Study of convergence, Taylor and Maclaurin series expansions with applications in approximations.</p>
+          <h3>Applications</h3>
+          <p>Widely used in physics, engineering, biology, economics for modeling dynamic systems and change.</p>
+          `
+        },
+        geometry: {
+          title: "Geometry",
+          description: "Rigorous treatment of Euclidean and non-Euclidean geometry, including proofs and constructions.",
+          detailed: `
+          <h3>Foundations</h3>
+          <p>Exploration of definitions, axioms, and theorems in Euclidean geometry, including points, lines, planes, and angles.</p>
+          <h3>Triangles and Polygons</h3>
+          <p>Detailed study of properties, area formulas, similarity, congruence criteria (SSS, SAS, ASA).</p>
+          <h3>Circles</h3>
+          <p>Investigations of chords, tangents, arcs, angles, and associated theorems.</p>
+          <h3>Coordinate Geometry</h3>
+          <p>Using algebraic methods to study geometric figures, calculating slopes and distances, and transformations.</p>
+          <h3>Non-Euclidean Geometry</h3>
+          <p>Introduction to hyperbolic and spherical geometry with applications.</p>
+          `
+        },
+        trigonometry: {
+          title: "Trigonometry",
+          description: "Comprehensive study of trigonometric functions, identities, and equations.",
+          detailed: `
+          <h3>Definitions</h3>
+          <p>Sine, Cosine, Tangent defined using right triangles and unit circle approaches.</p>
+          <h3>Identities</h3>
+          <p>Pythagorean, sum and difference formulas, double angle, half angle identities.</p>
+          <h3>Equations</h3>
+          <p>Techniques to solve linear and quadratic trigonometric equations.</p>
+          <h3>Applications</h3>
+          <p>Modeling waves, oscillations, and solving real-world angle/length problems.</p>
+          `
+        },
+        statistics: {
+          title: "Statistics",
+          description: "Advanced statistical methods and probability theory for data analysis.",
+          detailed: `
+          <h3>Descriptive Statistics</h3>
+          <p>Measures of central tendency and variability.</p>
+          <h3>Probability Distributions</h3>
+          <p>Binomial, Poisson, Normal and their properties.</p>
+          <h3>Hypothesis Testing</h3>
+          <p>Tests such as t-test, chi-square, ANOVA, and their conditions.</p>
+          <h3>Regression Analysis</h3>
+          <p>Simple and multiple linear regression, diagnostics.</p>
+          <h3>Applications</h3>
+          <p>Critical for research, economics, social sciences, and data science.</p>
+          `
         }
       }
     },
@@ -287,54 +447,39 @@
       topics: {
         tenses: {
           title: "Tenses",
-          description: "Tenses indicate the time of action in a sentence.",
-          tips: [
-            "Learn present, past, and future tenses with their forms.",
-            "Practice using continuous and perfect tenses.",
-            "Use time markers for clarity."
-          ],
-          detailed: `<h3>Types of Tenses:</h3>
-            <ul>
-              <li>Present Simple, Continuous, Perfect</li>
-              <li>Past Simple, Continuous, Perfect</li>
-              <li>Future Simple, Continuous, Perfect</li>
-            </ul>
-            <p>Understanding tenses helps to express time correctly and clearly in writing and speech.</p>`
+          description: "Detailed exploration of English tense system with context and examples.",
+          detailed: `
+          <h3>Overview</h3>
+          <p>English has 12 basic tenses categorized in past, present, and future with simple, continuous, perfect forms.</p>
+          <h3>Present Tenses</h3>
+          <p>Simple Present for habitual actions, Present Continuous for ongoing actions, Present Perfect for experience and result relevance.</p>
+          <h3>Past Tenses</h3>
+          <p>Simple Past for completed actions, Past Continuous for interrupted actions, Past Perfect indicating actions before another past action.</p>
+          <h3>Future Tenses</h3>
+          <p>Will-future for predictions, Going to-future for planned actions, Future Perfect for actions completed before a point in the future.</p>
+          <h3>Uses in Sentences</h3>
+          <p>Sample sentences illustrating different tenses in common contexts.</p>
+          `
         },
-        partsOfSpeech: {
-          title: "Parts of Speech",
-          description: "Categories of words based on their function.",
-          tips: [
-            "Learn nouns, pronouns, verbs, adjectives, and adverbs.",
-            "Understand how conjunctions and prepositions connect ideas.",
-            "Practice identifying parts of speech in sentences."
-          ],
-          detailed: `<h3>Main Parts of Speech:</h3>
-            <ul>
-              <li>Nouns and Pronouns</li>
-              <li>Verbs</li>
-              <li>Adjectives and Adverbs</li>
-              <li>Prepositions and Conjunctions</li>
-              <li>Interjections</li>
-            </ul>
-            <p>Mastering parts of speech improves comprehension and writing skills.</p>`
-        },
-        sentenceStructure: {
-          title: "Sentence Structure",
-          description: "How words are organized to form sentences.",
-          tips: [
-            "Focus on subject-verb agreement.",
-            "Understand types of sentences: declarative, interrogative, imperative, exclamatory.",
-            "Practice complex and compound sentences."
-          ],
-          detailed: `<h3>Elements of Sentence Structure:</h3>
-            <ul>
-              <li>Subjects and Predicates</li>
-              <li>Clauses and Phrases</li>
-              <li>Modifiers</li>
-              <li>Sentence Types and Variety</li>
-            </ul>
-            <p>Good sentence structure enhances clarity and style in communication.</p>`
+        punctuation: {
+          title: "Punctuation",
+          description: "Rules and usage of English punctuation marks with examples.",
+          detailed: `
+          <h3>Comma (,)</h3>
+          <p>Separates items in lists, offsets introductory phrases, and separates clauses.</p>
+          <h3>Period (.)</h3>
+          <p>Marks end of declarative sentences.</p>
+          <h3>Semicolon (;)</h3>
+          <p>Separates related independent clauses and complex list items.</p>
+          <h3>Colon (:)</h3>
+          <p>Introduces lists, explanations, and quotations.</p>
+          <h3>Quotation Marks (“ ”)</h3>
+          <p>Enclose direct speech, quotations, and titles.</p>
+          <h3>Apostrophe (’)</h3>
+          <p>Shows possession or contractions.</p>
+          <h3>Examples and Common Errors</h3>
+          <p>Practical guides to usage and avoiding mistakes.</p>
+          `
         }
       }
     },
@@ -343,262 +488,329 @@
       topics: {
         msOffice: {
           title: "MS Office",
-          description: "Suite of productivity applications by Microsoft.",
-          tips: [
-            "Use keyboard shortcuts for efficiency.",
-            "Explore templates for document creation.",
-            "Learn formatting tools and styles."
-          ],
-          detailed: `<h3>Applications in MS Office:</h3>
-            <ul>
-              <li>Word: Document editing and formatting</li>
-              <li>PowerPoint: Presentation creation</li>
-              <li>Outlook: Email and calendar</li>
-              <li>Access: Database management</li>
-            </ul>
-            <p>MS Office is used widely in offices for various productivity tasks.</p>`
+          description: "In-depth guide to Microsoft Office productivity tools.",
+          detailed: `
+          <h3>Microsoft Word</h3>
+          <p>Create and format professional documents using styles, templates, sections, and references.</p>
+          <h3>Microsoft Excel</h3>
+          <p>Use formulas, pivot tables, charts, and macros for data analysis and automation.</p>
+          <h3>PowerPoint</h3>
+          <p>Design impactful presentations with themes, animations, and multimedia.</p>
+          `
         },
-        excel: {
-          title: "Excel",
-          description: "Spreadsheet application for data analysis and visualization.",
-          tips: [
-            "Learn formulas and functions like SUM, IF, VLOOKUP.",
-            "Use charts and pivot tables for data insights.",
-            "Practice conditional formatting."
-          ],
-          detailed: `<h3>Excel Core Features:</h3>
-            <ul>
-              <li>Working with cells and ranges</li>
-              <li>Functions and formulas</li>
-              <li>Charts and graphs</li>
-              <li>Data filtering and sorting</li>
-            </ul>
-            <p>Excel is essential for accounting, data management, and analysis.</p>`
+        programming: {
+          title: "Programming",
+          description: "Core programming concepts for beginners and intermediate learners.",
+          detailed: `
+          <h3>Data Types & Variables</h3>
+          <p>Understanding primitive data types and storing information in variables.</p>
+          <h3>Control Flow</h3>
+          <p>Conditional statements (if-else) and loops (for, while) controlling program logic.</p>
+          <h3>Functions & Recursion</h3>
+          <p>Modularizing code with functions and understanding recursive algorithms.</p>
+          <h3>Object-Oriented Programming</h3>
+          <p>Classes, inheritance, encapsulation principles for scalable code.</p>
+          `
         },
-        spreadsheet: {
-          title: "Spreadsheet",
-          description: "Electronic document for organizing data in rows and columns.",
-          tips: [
-            "Understand rows, columns, and cells basics.",
-            "Use formulas to automate calculations.",
-            "Format cells for readability."
-          ],
-          detailed: `<h3>Spreadsheet Basics:</h3>
-            <ul>
-              <li>Creating and saving spreadsheets</li>
-              <li>Entering and editing data</li>
-              <li>Using formulas and functions</li>
-              <li>Data validation and protection</li>
-            </ul>
-            <p>Mastery of spreadsheets boosts productivity and data handling skills.</p>`
+        networking: {
+          title: "Networking",
+          description: "Fundamental concepts in computer networking.",
+          detailed: `
+          <h3>Networking Models</h3>
+          <p>OSI and TCP/IP models explaining different network layers.</p>
+          <h3>IP Addressing</h3>
+          <p>Understanding IPv4/IPv6, subnetting, and address allocation.</p>
+          <h3>Protocols</h3>
+          <p>HTTP, FTP, SMTP, and their roles in communication.</p>
+          `
+        },
+        cybersecurity: {
+          title: "Cybersecurity",
+          description: "Principles and practices for securing systems and data.",
+          detailed: `
+          <h3>Threat Landscape</h3>
+          <p>Types of malware, phishing, denial-of-service attacks.</p>
+          <h3>Security Measures</h3>
+          <p>Firewalls, antivirus, encryption, multi-factor authentication.</p>
+          <h3>Best Practices</h3>
+          <p>Patch management, secure coding, user protocols.</p>
+          `
         }
       }
     }
   };
 
-  // State tracking
-  let currentSubjectKey = null;
+  let currentSubjectKey = 'current';
   let currentTopicKey = null;
   let searchActive = false;
+  let currentAffairsIndex = 0;
+  let currentAffairsTimerId = null;
 
-  // DOM elements
-  const subjectListEl = document.getElementById('subjectList');
   const topicListEl = document.getElementById('topicList');
-  const contentDetailEl = document.getElementById('contentDetail');
-  const topicNameEl = document.getElementById('topicName');
+  const readingPageEl = document.getElementById('readingPage');
+  const readingContentEl = document.getElementById('readingContent');
+  const appHeaderEl = document.getElementById('appHeader');
   const searchToggleBtn = document.getElementById('searchToggle');
   const searchBarEl = document.getElementById('searchBar');
   const searchInputEl = document.getElementById('searchInput');
-  const navButtons = document.querySelectorAll('footer .nav-btn');
+  const navButtons = document.querySelectorAll('.bubble-nav');
+  const backToTopicsBtn = document.getElementById('backToTopics');
 
-  // Initialize subjects in top subject list and bottom nav state
-  function initSubjects() {
-    subjectListEl.innerHTML = '';
-    Object.entries(data).forEach(([key, subject]) => {
-      // Top subject list
-      const li = document.createElement('li');
-      li.textContent = subject.name;
-      li.classList.add('subject-item');
-      li.dataset.subject = key;
-      li.setAttribute('role', 'tab');
-      li.setAttribute('tabindex', '0');
-      li.setAttribute('aria-selected', 'false');
-      subjectListEl.appendChild(li);
-      // Event listeners for keyboard accessibility
-      li.addEventListener('click', () => selectSubject(key));
-      li.addEventListener('keydown', e => {
-        if(e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectSubject(key);
-        }
-      });
+  function setActiveNav(subjectKey) {
+    navButtons.forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.subject === subjectKey);
+      btn.setAttribute('aria-selected', btn.dataset.subject === subjectKey ? 'true' : 'false');
+      btn.tabIndex = btn.dataset.subject === subjectKey ? 0 : -1;
     });
   }
 
-  // Select subject
+  function showTopicList() {
+    readingPageEl.style.display = 'none';
+    topicListEl.style.display = 'block';
+    appHeaderEl.textContent = data[currentSubjectKey].name;
+    readingPageEl.scrollTop = 0;
+    topicListEl.scrollTop = 0;
+  }
+
+  function showReadingPage() {
+    topicListEl.style.display = 'none';
+    readingPageEl.style.display = 'block';
+    readingPageEl.focus();
+    topicListEl.scrollTop = 0;
+    readingPageEl.scrollTop = 0;
+  }
+
+  function clearSearch() {
+    searchInputEl.value = '';
+    searchBarEl.style.display = 'none';
+    searchActive = false;
+  }
+
+  function renderTopicList(subjectKey, filter = '') {
+    topicListEl.innerHTML = '';
+    const subject = data[subjectKey];
+    if(!subject) return;
+    const topics = subject.topics;
+    const keys = Object.keys(topics);
+    const filterLower = filter.toLowerCase();
+
+    const filteredKeys = filter.trim() === '' ? keys : keys.filter(k => {
+      const t = topics[k];
+      return t.title.toLowerCase().includes(filterLower)
+        || t.description.toLowerCase().includes(filterLower)
+        || (t.detailed && t.detailed.toLowerCase().includes(filterLower));
+    });
+
+    if(filteredKeys.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'no-result';
+      li.textContent = 'No topics found.';
+      topicListEl.appendChild(li);
+      return;
+    }
+
+    filteredKeys.forEach(key => {
+      const topic = topics[key];
+      const li = document.createElement('li');
+      li.tabIndex = 0;
+      li.className = 'topic-item';
+      const iconClass = {
+        current: 'fa-globe',
+        math: 'fa-square-root-variable',
+        english: 'fa-book-open',
+        computer: 'fa-laptop-code'
+      };
+      const subjectIcon = iconClass[currentSubjectKey] || 'fa-circle';
+      li.innerHTML = `<i class="fa-solid ${subjectIcon}"></i> ${topic.title}`;
+      li.onclick = () => selectTopic(key);
+      li.onkeypress = e => {
+        if(e.key === "Enter" || e.key === " ") {
+          selectTopic(key);
+        }
+      };
+      topicListEl.appendChild(li);
+    });
+  }
+
+  function selectTopic(topicKey) {
+    const subject = data[currentSubjectKey];
+    if(!subject) return;
+    const topic = subject.topics[topicKey];
+    if(!topic) return;
+    currentTopicKey = topicKey;
+
+    appHeaderEl.textContent = `${subject.name} - ${topic.title}`;
+    readingContentEl.innerHTML = `
+      <h2>${topic.title}</h2>
+      <p><em>${topic.description}</em></p>
+      ${topic.detailed || ''}
+    `;
+    showReadingPage();
+    clearSearch();
+  }
+
+  function startCurrentAffairsCarousel() {
+    const keys = Object.keys(data.current.topics);
+    if(keys.length === 0) return;
+    currentAffairsIndex = 0;
+    renderCurrentAffairs(keys[currentAffairsIndex]);
+
+    if(currentAffairsTimerId) clearInterval(currentAffairsTimerId);
+    currentAffairsTimerId = setInterval(() => {
+      currentAffairsIndex++;
+      if(currentAffairsIndex >= keys.length) currentAffairsIndex = 0;
+      renderCurrentAffairs(keys[currentAffairsIndex]);
+    }, 12000);
+  }
+
+  function renderCurrentAffairs(key) {
+    const topic = data.current.topics[key];
+    if(!topic) return;
+    currentTopicKey = null;
+    appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
+    readingContentEl.innerHTML = `
+      <div class='current-affairs-carousel'>
+        <div class='carousel-title'>${topic.title}</div>
+        <div class='carousel-date'>${topic.date || ''}</div>
+        <div class='carousel-content'>${topic.content}</div>
+        ${topic.detailed || ''}
+      </div>
+    `;
+    showReadingPage();
+  }
+
+  function stopCurrentAffairsCarousel() {
+    if(currentAffairsTimerId) {
+      clearInterval(currentAffairsTimerId);
+      currentAffairsTimerId = null;
+    }
+  }
+
   function selectSubject(subjectKey) {
     if(currentSubjectKey === subjectKey) return;
     currentSubjectKey = subjectKey;
     currentTopicKey = null;
-    searchInputEl.value = '';
+    clearSearch();
+    setActiveNav(subjectKey);
 
-    // Update top subject list active
-    document.querySelectorAll('.subject-item').forEach(item => {
-      if(item.dataset.subject === subjectKey) {
-        item.classList.add('active');
-        item.setAttribute('aria-selected', 'true');
-        item.focus();
-      } else {
-        item.classList.remove('active');
-        item.setAttribute('aria-selected', 'false');
-      }
-    });
-
-    // Update bottom nav active
-    navButtons.forEach(btn => {
-      if(btn.dataset.subject === subjectKey) {
-        btn.classList.add('active');
-      } else {
-        btn.classList.remove('active');
-      }
-    });
-
-    topicNameEl.textContent = data[subjectKey].name;
-    searchBarEl.style.display = 'none';
-    searchActive = false;
-
-    renderTopics(subjectKey);
-    contentDetailEl.innerHTML = '';
-    contentDetailEl.style.display = 'none';
-  }
-
-  // Render topics list for selected subject, filtered by search string optionally
-  function renderTopics(subjectKey, filter='') {
-    topicListEl.innerHTML = '';
-    const subjectTopics = data[subjectKey].topics;
-    let filteredKeys = Object.keys(subjectTopics);
-    if(filter.trim() !== '') {
-      const lcFilter = filter.toLowerCase();
-      filteredKeys = filteredKeys.filter(key => {
-        const topic = subjectTopics[key];
-        const inTitle = topic.title.toLowerCase().includes(lcFilter);
-        const inDesc = topic.description.toLowerCase().includes(lcFilter);
-        const inTips = topic.tips.some(tip => tip.toLowerCase().includes(lcFilter));
-        const inDetail = topic.detailed.toLowerCase().includes(lcFilter);
-        return inTitle || inDesc || inTips || inDetail;
-      });
+    if(subjectKey === 'current') {
+      startCurrentAffairsCarousel();
+    } else {
+      stopCurrentAffairsCarousel();
+      appHeaderEl.textContent = data[subjectKey].name;
+      renderTopicList(subjectKey);
+      showTopicList();
     }
-    if(filteredKeys.length === 0) {
-      const noResult = document.createElement('li');
-      noResult.textContent = 'No topics found.';
-      noResult.style.textAlign = 'center';
-      noResult.style.padding = '20px 0';
-      noResult.style.color = '#666';
-      topicListEl.appendChild(noResult);
-      return;
-    }
-    filteredKeys.forEach(key => {
-      const topic = subjectTopics[key];
-      const li = document.createElement('li');
-      li.classList.add('topic-item');
-      li.textContent = topic.title;
-      li.dataset.topic = key;
-      li.setAttribute('tabindex', '0');
-      li.setAttribute('role', 'listitem');
-      topicListEl.appendChild(li);
-      li.addEventListener('click', () => selectTopic(key));
-      li.addEventListener('keydown', e => {
-        if(e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          selectTopic(key);
-        }
-      });
-    });
   }
 
-  // Select topic and show detailed content
-  function selectTopic(topicKey) {
-    if(currentTopicKey === topicKey) return;
-    currentTopicKey = topicKey;
-
-    // Highlight active topic item
-    document.querySelectorAll('.topic-item').forEach(item => {
-      if(item.dataset.topic === topicKey) {
-        item.classList.add('active');
-        item.focus();
-      } else {
-        item.classList.remove('active');
-      }
-    });
-
-    const topic = data[currentSubjectKey].topics[topicKey];
-    topicNameEl.textContent = `${data[currentSubjectKey].name} - ${topic.title}`;
-
-    // Render detailed content
-    contentDetailEl.style.display = 'block';
-    contentDetailEl.innerHTML = `
-      <h2>${topic.title}</h2>
-      <p><em>${topic.description}</em></p>
-      <h3>Tips & Tricks:</h3>
-      <ul>${topic.tips.map(tip => `<li>${tip}</li>`).join('')}</ul>
-      ${topic.detailed}
-    `;
-
-    // Close search if open
-    searchBarEl.style.display = 'none';
-    searchActive = false;
-  }
-
-  // Toggle search bar visibility
   function toggleSearch() {
     if(searchActive) {
-      searchBarEl.style.display = 'none';
-      searchActive = false;
-      searchInputEl.value = '';
-      if(currentSubjectKey) {
-        renderTopics(currentSubjectKey);
+      clearSearch();
+      if(currentSubjectKey === 'current') {
+        startCurrentAffairsCarousel();
+      } else {
+        renderTopicList(currentSubjectKey);
+        showTopicList();
       }
-    } else {
-      if(!currentSubjectKey) return; // no subject selected
+    } else if(currentSubjectKey) {
+      if(currentSubjectKey === 'current') stopCurrentAffairsCarousel();
       searchBarEl.style.display = 'block';
       searchInputEl.focus();
       searchActive = true;
     }
   }
 
-  // Search input handler
   function onSearchInput() {
     const query = searchInputEl.value.trim();
-    if(currentSubjectKey) {
-      renderTopics(currentSubjectKey, query);
-      contentDetailEl.style.display = 'none';
-      topicNameEl.textContent = query ? `Search results for "${query}"` : `${data[currentSubjectKey].name}`;
+    if(currentSubjectKey === 'current') {
+      const filteredKeys = Object.keys(data.current.topics).filter(k => {
+        const t = data.current.topics[k];
+        const qLower = query.toLowerCase();
+        return (t.title.toLowerCase().includes(qLower) || t.description.toLowerCase().includes(qLower) || t.content.toLowerCase().includes(qLower));
+      });
+
+      if(filteredKeys.length > 0) {
+        stopCurrentAffairsCarousel();
+        topicListEl.innerHTML = '';
+        filteredKeys.forEach(key => {
+          const topic = data.current.topics[key];
+          const li = document.createElement('li');
+          li.tabIndex = 0;
+          li.className = 'topic-item';
+          li.innerHTML = '<i class="fa-solid fa-globe"></i> ' + topic.title;
+          li.onclick = () => selectCurrentAffairsTopic(key);
+          li.onkeypress = e => {
+            if(e.key === "Enter" || e.key === " ") selectCurrentAffairsTopic(key);
+          };
+          topicListEl.appendChild(li);
+        });
+        showTopicList();
+        readingPageEl.style.display = 'none';
+        appHeaderEl.textContent = `Search results for "${query}"`;
+      } else {
+        topicListEl.innerHTML = '<li class="no-result">No results found.</li>';
+        showTopicList();
+        readingPageEl.style.display = 'none';
+        appHeaderEl.textContent = `Search results for "${query}"`;
+      }
+    } else {
+      renderTopicList(currentSubjectKey, query);
+      showTopicList();
+      readingPageEl.style.display = 'none';
+      appHeaderEl.textContent = query ? `Search results for "${query}"` : data[currentSubjectKey].name;
     }
   }
 
-  // Footer nav buttons event handler
-  function initNavButtons() {
-    navButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        selectSubject(btn.dataset.subject);
-      });
+  function selectCurrentAffairsTopic(topicKey) {
+    const topic = data.current.topics[topicKey];
+    if(!topic) return;
+    currentTopicKey = topicKey;
+    appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
+    readingContentEl.innerHTML = `
+      <h2>${topic.title}</h2>
+      <p><em>${topic.description}</em></p>
+      <p>${topic.content}</p>
+      ${topic.detailed || ''}
+    `;
+    showReadingPage();
+    clearSearch();
+  }
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectSubject(btn.dataset.subject);
     });
-  }
+    btn.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectSubject(btn.dataset.subject);
+      }
+    });
+  });
 
-  // Initialize app
-  function init() {
-    initSubjects();
-    initNavButtons();
-    topicNameEl.textContent = "Select a Subject";
-  }
-
-  // Event listeners
   searchToggleBtn.addEventListener('click', toggleSearch);
   searchInputEl.addEventListener('input', onSearchInput);
+  backToTopicsBtn.addEventListener('click', () => {
+    clearSearch();
+    if(currentSubjectKey === 'current') {
+      startCurrentAffairsCarousel();
+    } else {
+      appHeaderEl.textContent = data[currentSubjectKey].name;
+      renderTopicList(currentSubjectKey);
+      showTopicList();
+    }
+  });
 
-  // Initialize on page load
-  window.addEventListener('load', init);
+  window.addEventListener('load', () => {
+    setActiveNav(currentSubjectKey);
+    if(currentSubjectKey === 'current') {
+      startCurrentAffairsCarousel();
+    } else {
+      renderTopicList(currentSubjectKey);
+      showTopicList();
+    }
+  });
+})();
 </script>
 </body>
 </html>
-
