@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ultimate Study Dictionary & Current Affairs</title>
+<title>Study Dictionary & Current Affairs</title>
 <!-- Font Awesome CDN for icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <!-- Papa Parse CDN for CSV parsing -->
@@ -37,16 +37,6 @@
     user-select: none;
     position: relative;
   }
-  #loadingIndicator {
-    position: absolute;
-    right: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    color: #1e3a8a;
-    display: none;
-    user-select: none;
-  }
 
   main {
     flex: 1;
@@ -56,6 +46,7 @@
     margin: auto;
     width: 100%;
   }
+
   /* File load button */
   #loadFileBtn {
     position: fixed;
@@ -339,30 +330,27 @@
 <button id="loadFileBtn" aria-label="Load Topics CSV"><i class="fa-solid fa-file-csv"></i> Load Topics CSV</button>
 <input type="file" id="fileInput" accept=".csv,text/csv" />
 
-<header id="appHeader" tabindex="0" aria-live="polite" aria-atomic="true" aria-busy="false">Loading Current Affairs...</header>
-<div id="loadingIndicator" aria-hidden="true">Loading…</div>
+<header id="appHeader" tabindex="0" aria-live="polite" aria-atomic="true">Current Affairs</header>
+<div id="loadingIndicator" aria-hidden="true" style="display:none; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #1e3a8a; user-select: none;">Loading…</div>
 
 <main>
   <!-- Topic List Page -->
-  <ul id="topicList" role="list" aria-label="Subject topics">
-    <!-- Dynamic topic items -->
-  </ul>
+  <ul id="topicList" role="list" aria-label="Subject topics"></ul>
 
   <!-- Reading Page: detailed content with back button -->
-  <section id="readingPage" tabindex="0" aria-live="polite" aria-atomic="true">
+  <section id="readingPage" tabindex="0" aria-live="polite" aria-atomic="true" style="display:none;">
     <button id="backToTopics" aria-label="Back to topic list"><i class="fa-solid fa-arrow-left"></i> Back to Topics</button>
-    <div id="readingContent">
-      <!-- detailed content here -->
-    </div>
+    <div id="readingContent"></div>
   </section>
 </main>
 
-<button id="searchToggle" aria-label="Toggle Search" title="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-<div id="searchBar" role="search">
-  <input type="search" id="searchInput" placeholder="Search notes and topics..." aria-label="Search notes and topics" autocomplete="off" />
+<button id="searchToggle" aria-label="Toggle Search" title="Search" style="position: fixed; bottom: 120px; right: 16px; width: 44px; height: 44px; border-radius: 3px; background: #000; color: #fff; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; user-select: none; font-size: 24px; z-index: 1100;"><i class="fa-solid fa-magnifying-glass"></i></button>
+<div id="searchBar" role="search" style="position: fixed; bottom: 65px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 700px; background: white; border: 1px solid #000; padding: 6px 14px; display: none; z-index: 1050;">
+  <input type="search" id="searchInput" placeholder="Search notes and topics..." aria-label="Search notes and topics" autocomplete="off"
+         style="width: 100%; padding: 6px 10px; font-size: 12px; border: none; outline: none; font-weight: 600; letter-spacing: 0.02em; color: #000; background: #f9f9f9; border-radius: 3px; box-sizing: border-box;" />
 </div>
 
-<footer role="tablist" aria-label="Primary subjects navigation">
+<footer role="tablist" aria-label="Primary subjects navigation" style="background: #fff; border-top: 1px solid #ccc; box-shadow: 0 -1px 5px rgba(0,0,0,0.1); position: fixed; bottom: 0; width: 100%; height: 56px; display: flex; justify-content: space-around; align-items: center; padding: 0 8px; z-index: 1000;">
   <button class="bubble-nav" data-subject="current" aria-selected="true" role="tab" tabindex="0" aria-controls="topicList" aria-label="Current Affairs"><i class="fa-solid fa-globe"></i>Current</button>
   <button class="bubble-nav" data-subject="math" aria-selected="false" role="tab" tabindex="-1" aria-controls="topicList" aria-label="Math"><i class="fa-solid fa-square-root-variable"></i>Math</button>
   <button class="bubble-nav" data-subject="english" aria-selected="false" role="tab" tabindex="-1" aria-controls="topicList" aria-label="English Grammar"><i class="fa-solid fa-book-open"></i>English</button>
@@ -374,10 +362,28 @@
 <script>
 (() => {
   let data = {
-    current: { name: "Current Affairs", topics: {} },
-    math: { name: "Math", topics: {} },
-    english: { name: "English Grammar", topics: {} },
-    computer: { name: "Computer", topics: {} }
+    current: {
+      name: "Current Affairs",
+      topics: {
+        "event1": {
+          title: "Global Climate Summit 2024",
+          description: "International commitments to climate action.",
+          detailed: "<h3>Overview</h3><p>In 2024, the global climate summit brought agreements among nations to reduce emissions and invest in sustainable technologies...</p>",
+          date: "April 2024",
+          content: "World leaders' commitments for a better planet."
+        },
+        "event2": {
+          title: "Space Tourism Breakthrough",
+          description: "Historic commercial private space flight.",
+          detailed: "<h3>Flight milestone</h3><p>Advances in reusable rockets enable new tourism possibilities...</p>",
+          date: "May 2024",
+          content: "Opening space for all."
+        }
+      }
+    },
+    math: {name: "Math", topics:{}},
+    english: {name:"English Grammar", topics:{}},
+    computer: {name:"Computer", topics:{}}
   };
 
   let currentSubjectKey = 'current';
@@ -386,7 +392,6 @@
   let currentAffairsIndex = 0;
   let currentAffairsTimerId = null;
 
-  // DOM refs
   const topicListEl = document.getElementById('topicList');
   const readingPageEl = document.getElementById('readingPage');
   const readingContentEl = document.getElementById('readingContent');
@@ -400,253 +405,181 @@
   const fileInput = document.getElementById('fileInput');
   const loadingIndicator = document.getElementById('loadingIndicator');
 
-  // Fetch current affairs JSON from online source (you must provide your JSON URL)
-  const currentAffairsURL = 'https://raw.githubusercontent.com/blackbox-ai/sample-assets/main/current_affairs_2023_2025.json';
-
-  function fetchCurrentAffairs() {
-    loadingIndicator.style.display = 'inline';
-    appHeaderEl.setAttribute('aria-busy', 'true');
-    fetch(currentAffairsURL)
-      .then(response => {
-        if (!response.ok) throw new Error("Network response not ok");
-        return response.json();
-      })
-      .then(json => {
-        loadingIndicator.style.display = 'none';
-        appHeaderEl.setAttribute('aria-busy', 'false');
-        data.current.topics = json.topics || {};
-        // if current subject active, refresh
-        if (currentSubjectKey === 'current') {
-          renderTopicList('current');
-          showTopicList();
-        }
-      })
-      .catch(err => {
-        loadingIndicator.style.display = 'none';
-        appHeaderEl.setAttribute('aria-busy', 'false');
-        alert('Failed to load Current Affairs data.\n' + err.message);
-      });
-  }
-
-  // CSV parsing and loading for other subjects
-  function loadDataFromCSV(rows) {
-    const allowedSubjects = ['math', 'english', 'computer'];
-    allowedSubjects.forEach(subj => data[subj].topics = {}); // clear those subjects only
-    rows.forEach(row => {
-      const subject = row.subject.toLowerCase();
-      if (!data[subject]) {
-        if (allowedSubjects.includes(subject)) {
-          data[subject] = { name: row.subject, topics: {} };
-        }
-      }
-      if (allowedSubjects.includes(subject)) {
-        const key = row.topicKey || `topic${Object.keys(data[subject].topics).length + 1}`;
-        data[subject].topics[key] = {
-          title: row.title || "",
-          description: row.description || "",
-          detailed: row.detailed || "",
-          date: row.date || "",
-          content: row.content || ""
-        };
-      }
-    });
-    if (currentSubjectKey !== 'current') {
-      renderTopicList(currentSubjectKey);
-      showTopicList();
-    }
-  }
-
-  function setActiveNav(subjectKey) {
-    navButtons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.subject === subjectKey);
-      btn.setAttribute('aria-selected', btn.dataset.subject === subjectKey ? 'true' : 'false');
-      btn.tabIndex = btn.dataset.subject === subjectKey ? 0 : -1;
+  function setActiveNav(subj){
+    navButtons.forEach(btn=>{
+      const active= btn.dataset.subject === subj;
+      btn.classList.toggle('active', active);
+      btn.setAttribute('aria-selected',active?"true":"false");
+      btn.tabIndex=active?0:-1;
     });
   }
-
-  function showTopicList() {
-    readingPageEl.style.display = 'none';
-    topicListEl.style.display = 'block';
-    appHeaderEl.textContent = data[currentSubjectKey].name;
-    readingPageEl.scrollTop = 0;
-    topicListEl.scrollTop = 0;
+  function showTopicList(){
+    readingPageEl.style.display='none';
+    topicListEl.style.display='block';
+    appHeaderEl.textContent=data[currentSubjectKey]?.name||"";
+    readingPageEl.scrollTop=0; topicListEl.scrollTop=0;
   }
-
-  function showReadingPage() {
-    topicListEl.style.display = 'none';
-    readingPageEl.style.display = 'block';
+  function showReadingPage(){
+    topicListEl.style.display='none';
+    readingPageEl.style.display='block';
     readingPageEl.focus();
-    topicListEl.scrollTop = 0;
-    readingPageEl.scrollTop = 0;
+    topicListEl.scrollTop=0; readingPageEl.scrollTop=0;
   }
-
-  function clearSearch() {
-    searchInputEl.value = '';
-    searchBarEl.style.display = 'none';
-    searchActive = false;
+  function clearSearch(){
+    searchInputEl.value="";
+    searchBarEl.style.display="none";
+    searchActive=false;
   }
-
-  function renderTopicList(subjectKey, filter = '') {
-    topicListEl.innerHTML = '';
-    const subject = data[subjectKey];
-    if (!subject) return;
-    const topics = subject.topics;
-    const keys = Object.keys(topics);
-    const filterLower = filter.toLowerCase();
-
-    const filteredKeys = filter.trim() === '' ? keys : keys.filter(k => {
-      const t = topics[k];
-      return t.title.toLowerCase().includes(filterLower)
-        || t.description.toLowerCase().includes(filterLower)
-        || (t.detailed && t.detailed.toLowerCase().includes(filterLower));
+  function renderTopicList(subj,filter=""){
+    topicListEl.innerHTML="";
+    const subject=data[subj];
+    if(!subject) return;
+    const keys=Object.keys(subject.topics);
+    const fltr=filter.toLowerCase().trim();
+    const filtered= fltr==="" ? keys : keys.filter(k=>{
+      const t=subject.topics[k];
+      return t.title.toLowerCase().includes(fltr) || t.description.toLowerCase().includes(fltr) || (t.detailed && t.detailed.toLowerCase().includes(fltr));
     });
-
-    if (filteredKeys.length === 0) {
-      const li = document.createElement('li');
-      li.className = 'no-result';
-      li.textContent = 'No topics found.';
-      topicListEl.appendChild(li);
+    if(filtered.length===0){
+      topicListEl.innerHTML=`<li class="no-result">No topics found.</li>`;
       return;
     }
-
-    filteredKeys.forEach(key => {
-      const topic = topics[key];
+    filtered.forEach(k=>{
+      const topic = subject.topics[k];
       const li = document.createElement('li');
-      li.tabIndex = 0;
       li.className = 'topic-item';
-      const iconClass = {
-        current: 'fa-globe',
-        math: 'fa-square-root-variable',
-        english: 'fa-book-open',
-        computer: 'fa-laptop-code'
-      };
-      const subjectIcon = iconClass[currentSubjectKey] || 'fa-circle';
-      li.innerHTML = `<i class="fa-solid ${subjectIcon}"></i> ${topic.title}`;
-      li.onclick = () => selectTopic(key);
-      li.onkeypress = e => {
-        if (e.key === "Enter" || e.key === " ") {
-          selectTopic(key);
-        }
-      };
+      li.tabIndex=0;
+      const icons={current:"fa-globe",math:"fa-square-root-variable",english:"fa-book-open",computer:"fa-laptop-code"};
+      const icon = icons[subj]||"fa-circle";
+      li.innerHTML = `<i class="fa-solid ${icon}"></i> ${topic.title}`;
+      li.onclick = ()=>selectTopic(k);
+      li.onkeydown = e=>{ if(e.key==="Enter" || e.key===" "){ e.preventDefault(); selectTopic(k); } };
       topicListEl.appendChild(li);
     });
   }
-
-  function selectTopic(topicKey) {
+  function selectTopic(key){
     const subject = data[currentSubjectKey];
-    if (!subject) return;
-    const topic = subject.topics[topicKey];
-    if (!topic) return;
-    currentTopicKey = topicKey;
-
+    if(!subject) return;
+    const topic = subject.topics[key];
+    if(!topic) return;
+    currentTopicKey = key;
     appHeaderEl.textContent = `${subject.name} - ${topic.title}`;
-    readingContentEl.innerHTML = `
-      <h2>${topic.title}</h2>
-      <p><em>${topic.description}</em></p>
-      ${topic.detailed || ''}
-    `;
+    readingContentEl.innerHTML = `<h2>${topic.title}</h2><p><em>${topic.description}</em></p>${topic.detailed||''}`;
     showReadingPage();
     clearSearch();
   }
-
-  function startCurrentAffairsCarousel() {
+  function startCurrentAffairsCarousel(){
     const keys = Object.keys(data.current.topics);
-    if (keys.length === 0) return;
-    currentAffairsIndex = 0;
-    renderCurrentAffairs(keys[currentAffairsIndex]);
-
-    if (currentAffairsTimerId) clearInterval(currentAffairsTimerId);
+    if(keys.length===0) return;
+    currentAffairsIndex=0; renderCurrentAffairs(keys[0]);
+    if(currentAffairsTimerId) clearInterval(currentAffairsTimerId);
     currentAffairsTimerId = setInterval(() => {
       currentAffairsIndex++;
-      if (currentAffairsIndex >= keys.length) currentAffairsIndex = 0;
+      if(currentAffairsIndex>=keys.length) currentAffairsIndex=0;
       renderCurrentAffairs(keys[currentAffairsIndex]);
-    }, 15000);
+    },15000);
   }
-
-  function renderCurrentAffairs(key) {
+  function renderCurrentAffairs(key){
     const topic = data.current.topics[key];
-    if (!topic) return;
-    currentTopicKey = null;
-    appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
+    if(!topic) return;
+    currentTopicKey=null;
+    appHeaderEl.textContent=`Current Affairs - ${topic.title}`;
     readingContentEl.innerHTML = `
       <div class='current-affairs-carousel'>
         <div class='carousel-title'>${topic.title}</div>
-        <div class='carousel-date'>${topic.date || ''}</div>
+        <div class='carousel-date'>${topic.date||''}</div>
         <div class='carousel-content'>${topic.content}</div>
-        ${topic.detailed || ''}
+        ${topic.detailed||''}
       </div>
     `;
     showReadingPage();
   }
-
-  function stopCurrentAffairsCarousel() {
-    if (currentAffairsTimerId) {
+  function stopCurrentAffairsCarousel(){
+    if(currentAffairsTimerId){
       clearInterval(currentAffairsTimerId);
       currentAffairsTimerId = null;
     }
   }
-
-  function selectSubject(subjectKey) {
-    if (currentSubjectKey === subjectKey) return;
-    currentSubjectKey = subjectKey;
-    currentTopicKey = null;
-    clearSearch();
-    setActiveNav(subjectKey);
-
-    if (subjectKey === 'current') {
-      fetchCurrentAffairs();
-    } else {
-      stopCurrentAffairsCarousel();
-      appHeaderEl.textContent = data[subjectKey].name;
-      renderTopicList(subjectKey);
+  function loadDataFromCSV(rows){
+    ['math','english','computer','current'].forEach(subj => {
+      if(!data[subj]){
+        data[subj] = {name: subj.charAt(0).toUpperCase() + subj.slice(1), topics:{}};
+      }
+      if(subj !== 'current'){
+        data[subj].topics = {};
+      }
+    });
+    rows.forEach(row => {
+      const subject = row.subject.toLowerCase().trim();
+      if(!data[subject]){
+        data[subject] = {name: row.subject, topics:{}};
+      }
+      const key = row.topicKey || `topic${Object.keys(data[subject].topics).length + 1}`;
+      data[subject].topics[key] = {
+        title: row.title || "",
+        description: row.description || "",
+        detailed: row.detailed || "",
+        date: row.date || "",
+        content: row.content || ""
+      };
+    });
+    if(currentSubjectKey === 'current' || currentSubjectKey === 'math' || currentSubjectKey === 'english' || currentSubjectKey === 'computer'){
+      renderTopicList(currentSubjectKey);
       showTopicList();
     }
   }
-
-  function toggleSearch() {
-    if (searchActive) {
+  function selectSubject(subj){
+    if(currentSubjectKey === subj) return;
+    currentSubjectKey = subj;
+    currentTopicKey = null;
+    clearSearch();
+    setActiveNav(subj);
+    if(subj === 'current') {
+      stopCurrentAffairsCarousel();
+      renderTopicList('current');
+      showTopicList();
+      startCurrentAffairsCarousel();
+    } else {
+      stopCurrentAffairsCarousel();
+      renderTopicList(subj);
+      showTopicList();
+    }
+  }
+  function toggleSearch(){
+    if(searchActive){
       clearSearch();
-      if (currentSubjectKey === 'current') {
-        if (Object.keys(data.current.topics).length > 0) {
-          renderTopicList('current');
-          showTopicList();
-        } else {
-          fetchCurrentAffairs();
-        }
+      if(currentSubjectKey==='current'){
+        startCurrentAffairsCarousel();
       } else {
         renderTopicList(currentSubjectKey);
         showTopicList();
       }
-    } else if (currentSubjectKey) {
-      if (currentSubjectKey === 'current') stopCurrentAffairsCarousel();
+    } else {
+      if(currentSubjectKey==='current') stopCurrentAffairsCarousel();
       searchBarEl.style.display = 'block';
       searchInputEl.focus();
       searchActive = true;
     }
   }
-
-  function onSearchInput() {
-    const query = searchInputEl.value.trim();
-    if (currentSubjectKey === 'current') {
-      const filteredKeys = Object.keys(data.current.topics).filter(k => {
+  function onSearchInput(){
+    const query=searchInputEl.value.trim();
+    if(currentSubjectKey==='current'){
+      const filtered = Object.keys(data.current.topics).filter(k => {
         const t = data.current.topics[k];
-        const qLower = query.toLowerCase();
-        return (t.title.toLowerCase().includes(qLower) || t.description.toLowerCase().includes(qLower) || (t.content && t.content.toLowerCase().includes(qLower)));
+        const q = query.toLowerCase();
+        return t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || (t.content && t.content.toLowerCase().includes(q));
       });
-
-      if (filteredKeys.length > 0) {
+      if(filtered.length>0){
         stopCurrentAffairsCarousel();
         topicListEl.innerHTML = '';
-        filteredKeys.forEach(key => {
-          const topic = data.current.topics[key];
+        filtered.forEach(k => {
+          const t = data.current.topics[k];
           const li = document.createElement('li');
-          li.tabIndex = 0;
-          li.className = 'topic-item';
-          li.innerHTML = '<i class="fa-solid fa-globe"></i> ' + topic.title;
-          li.onclick = () => selectCurrentAffairsTopic(key);
-          li.onkeypress = e => {
-            if (e.key === "Enter" || e.key === " ") selectCurrentAffairsTopic(key);
-          };
+          li.tabIndex=0;
+          li.className='topic-item';
+          li.innerHTML = '<i class="fa-solid fa-globe"></i> ' + t.title;
+          li.onclick = () => selectCurrentAffairsTopic(k);
+          li.onkeypress = e => { if(e.key === "Enter" || e.key === " ") selectCurrentAffairsTopic(k); };
           topicListEl.appendChild(li);
         });
         showTopicList();
@@ -665,26 +598,18 @@
       appHeaderEl.textContent = query ? `Search results for "${query}"` : data[currentSubjectKey].name;
     }
   }
-
-  function selectCurrentAffairsTopic(topicKey) {
-    const topic = data.current.topics[topicKey];
-    if (!topic) return;
-    currentTopicKey = topicKey;
+  function selectCurrentAffairsTopic(key){
+    const topic = data.current.topics[key];
+    if(!topic) return;
+    currentTopicKey = key;
     appHeaderEl.textContent = `Current Affairs - ${topic.title}`;
-    readingContentEl.innerHTML = `
-      <h2>${topic.title}</h2>
-      <p><em>${topic.description}</em></p>
-      <p>${topic.content || ''}</p>
-      ${topic.detailed || ''}
-    `;
+    readingContentEl.innerHTML = `<h2>${topic.title}</h2><p><em>${topic.description}</em></p><p>${topic.content || ''}</p>${topic.detailed || ''}`;
     showReadingPage();
     clearSearch();
   }
 
   navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectSubject(btn.dataset.subject);
-    });
+    btn.addEventListener('click', () => selectSubject(btn.dataset.subject));
     btn.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
@@ -698,12 +623,7 @@
   backToTopicsBtn.addEventListener('click', () => {
     clearSearch();
     if (currentSubjectKey === 'current') {
-      if (Object.keys(data.current.topics).length > 0) {
-        renderTopicList('current');
-        showTopicList();
-      } else {
-        fetchCurrentAffairs();
-      }
+      startCurrentAffairsCarousel();
     } else {
       appHeaderEl.textContent = data[currentSubjectKey].name;
       renderTopicList(currentSubjectKey);
@@ -711,12 +631,7 @@
     }
   });
 
-  // CSV Load UI interactions
-  const loadFileBtn = document.getElementById('loadFileBtn');
-  const fileInput = document.getElementById('fileInput');
-
   loadFileBtn.addEventListener('click', () => fileInput.click());
-
   fileInput.addEventListener('change', e => {
     const file = e.target.files[0];
     if (file) {
@@ -725,11 +640,6 @@
         skipEmptyLines: true,
         complete: (results) => {
           loadDataFromCSV(results.data);
-          // Refresh UI with loaded data if current tab is not current affairs
-          if (currentSubjectKey !== 'current') {
-            renderTopicList(currentSubjectKey);
-            showTopicList();
-          }
         },
         error: (err) => {
           alert("Error parsing CSV: " + err.message);
@@ -738,34 +648,11 @@
     }
   });
 
-  function fetchCurrentAffairs() {
-    loadingIndicator.style.display = 'inline';
-    appHeaderEl.setAttribute('aria-busy', 'true');
-    // For demonstration, using a static dummy JSON on GitHub:
-    // Replace the URL below with your actual current affairs JSON URL
-    fetch('https://raw.githubusercontent.com/blackbox-ai/sample-assets/main/current_affairs_2023_2025.json')
-      .then(response => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
-      .then(json => {
-        loadingIndicator.style.display = 'none';
-        appHeaderEl.setAttribute('aria-busy', 'false');
-        data.current.topics = json.topics || {};
-        renderTopicList('current');
-        showTopicList();
-      })
-      .catch(err => {
-        loadingIndicator.style.display = 'none';
-        appHeaderEl.setAttribute('aria-busy', 'false');
-        alert('Failed to load Current Affairs data.\n' + err.message);
-      });
-  }
-
   window.addEventListener('load', () => {
     setActiveNav(currentSubjectKey);
-    // Initially fetch current affairs
-    fetchCurrentAffairs();
+    renderTopicList(currentSubjectKey);
+    showTopicList();
+    startCurrentAffairsCarousel();
   });
 })();
 </script>
